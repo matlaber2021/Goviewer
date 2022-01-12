@@ -18,7 +18,7 @@ end
 
 switch(ext)
   case {'.sgf','.SGF'}
-    obj=SGFReader(fullname,'gbk');
+    obj=SGFReader(fullname);
     obj.Encoding='gbk';
     SGFParser(obj);
     Manager.DATA.CURRENT_STONE=obj.CURRENT_STONE;

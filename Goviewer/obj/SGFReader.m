@@ -46,17 +46,32 @@ classdef SGFReader < handle
       end
       
       createProgressBar(obj);
-      
+      obj.Filename=filename;
       obj.CURRENT_STONE = Stone();
-      if nargin<2,encoding=obj.Encoding; end
-      if ~isempty(encoding)
-        fid = fopen(filename,'r','n',encoding);
-      else
-        fid = fopen(filename,'r');
+      
+      MatlabEncodingCheck=0;
+      if(nargin<2)
+        autoEncodingCheck(obj);
+        % If auto encoding check fails, using matlab checking.
+        if(isempty(obj.Encoding))
+          MatlabEncodingCheck=1;
+        end
+      elseif(nargin==3)
+        if(isempty(encoding))
+          MatlabEncodingCheck=1;
+        elseif(~isempty(encoding))
+          obj.Encoding=encoding;
+        end
       end
-      
-      cleanup = onCleanup(@()fclose(fid));
-      
+
+      if(~MatlabEncodingCheck)
+        fid=fopen(filename,'r','n',obj.Encoding);
+      elseif(MatlabEncodingCheck)
+        fid=fopen(filename,'r');
+      end
+      o = onCleanup(@()fclose(fid));  
+        
+      % Reading sgf data...
       sgfData = '';
       while 1
         tline = fgets(fid);
@@ -68,7 +83,7 @@ classdef SGFReader < handle
     end
     
     function SGFParser(obj)
-      % SGF解析器
+      % SGF prasing step.
       
       prepareForProgressBar(obj);
       o1 = onCleanup(@() cleanup(obj.ProgressBarTimer));
@@ -80,8 +95,6 @@ classdef SGFReader < handle
         
         %obj.ProgressBar.Value=obj.I/numel(obj.TEXT);
         
-        % 一开始，识别出左括号则标志着搜索深度增加一层，另一层含义是开启了下一
-        % 分支。如果是在识别PROPVAL时出现左括号，将不会落入该if语句
         % Often at the begining, recognizing of the left paren which means
         % that the parsing depth will be increased by one level, also be
         % concluded that it may open the next branch. If the left paren
@@ -93,7 +106,9 @@ classdef SGFReader < handle
               obj.DEPTH = [obj.DEPTH; obj.CURRENT_DEPTH];
               obj.I=obj.I+1;
               
-              % 开启新的分支
+              % Opening up the new branch, however maybe the branch node
+              % would possibly be changed.
+              
               %obj.BRANCH = [obj.BRANCH; obj.CURRENT_STONE];
               %obj.BRANCH{end+1}=obj.CURRENT_STONE;
               if(length(obj.BRANCH)<obj.CURRENT_DEPTH)
@@ -106,8 +121,6 @@ classdef SGFReader < handle
           end
         end
         
-        % 当识别出右括号则标志着搜索深度减少一层，另外意味着新分支的结束，即回归
-        % 到上一主分支。如果是在识别PROPVAL时出现右括号，将不会落入该if语句
         % On the other hand, the right paren means that the parsing depth
         % will be decreased by one degree, and the new branch exits, then
         % back to the preceeding branch. if the right paren occurrs when
@@ -116,7 +129,7 @@ classdef SGFReader < handle
           if ~obj.PARSING_PROPVAL
             if obj.TEXT(obj.I)==')'
               
-              % 返回目标分支
+              % Return the last target branch.
               if(obj.CURRENT_DEPTH>0)
                 %obj.CURRENT_STONE = obj.BRANCH(obj.CURRENT_DEPTH);
                 obj.CURRENT_STONE = obj.BRANCH{obj.CURRENT_DEPTH}{end};
@@ -124,7 +137,9 @@ classdef SGFReader < handle
                 obj.CURRENT_STONE = [];
               end
               
-              
+              % if meeting with multiple ")" symbol, it would traverse this
+              % statement over and over, and the current depth will be
+              % lower and lower.
               obj.CURRENT_DEPTH=obj.CURRENT_DEPTH-1;
               obj.DEPTH = [obj.DEPTH; obj.CURRENT_DEPTH];
               obj.I=obj.I+1;
@@ -134,8 +149,6 @@ classdef SGFReader < handle
           end
         end
         
-        % 识别出分号标志，说明识别PROP的开始。如果在识别PROPVAL时出现分号，
-        % 将不会落入该if语句
         % Semicolon symbol may means the next string will be PROP. If
         % semicolon symbol occurs when parsing PROPVAL, it won't step into
         % the if-block.
@@ -148,6 +161,8 @@ classdef SGFReader < handle
               
               splitMultiPROPS(obj);
               
+              % After spliting the props, set the <JustAddedBranch>
+              % property false.
               if(obj.JustAddedBranch)
                obj.JustAddedBranch=0;
               end
@@ -159,8 +174,6 @@ classdef SGFReader < handle
           end
         end
         
-        % 以下是解析PROPS的过程，比如AB[pd]中的AB是PROPS，[pd]是PROPVAL
-        % 当解析至左方括号时，说明PROPS识别结束，立刻开始识别PROPVAL
         % The following is the process of parsing PROPS. For example AB in
         % AB[pd] is PROPS, and [pd] is called PROPVAL. When parsing through
         % the left bracket, marking the end of parsing step, then parsing
@@ -180,17 +193,12 @@ classdef SGFReader < handle
           end
         end
         
-        % 解析PROPVAL的过程，由于PROPVAL的结束标志不存在，所以需要单独设置
-        % parsingPROPVAL方法来辅助识别
         % The process of parsing PROPVAL. Because the ending marker of
         % PROPVAL is ambiguous, using parsingPROPVAL internal method to
         % recognizing it auxiliarily.
         if ~obj.PARSING_PROPS
           if obj.PARSING_PROPVAL
             
-            % 解析PROPVAL过程，针对下面两种情形
-            % (1)如果出现...LB[cc][pd])...时，说明[cc][pd]是PROPVAL
-            % (2)如果出现...C[好棋!]AP[...时，说明[[好棋!]是PROPVAL
             % Most to deal with the following two cases
             % (1) If ...LB[cc][pd])... occurs, detecting the PROPVAL of
             % [cc][pd]
@@ -204,8 +212,6 @@ classdef SGFReader < handle
           
         end
         
-        % 如果因为其他不影响解析的字符串（比如空字符串等），不会影响解析结果，
-        % 正常继续while循环
         % If meeting with the rest cases(e.g. Empty chars...), it won't affect
         % the parsing result, continuing the while-loop as usual.
         obj.I=obj.I+1;
@@ -302,6 +308,7 @@ classdef SGFReader < handle
     end
     
     function L = isNextSemicolon(obj)
+      % check if the next symbol is semicolon
       
       if numel(obj.TEXT)==obj.I
         L=0;
@@ -322,7 +329,7 @@ classdef SGFReader < handle
     end
     
     function L = isNextParen(obj)
-      % finding the next paren
+      % check if the next symbol is paren
       
       if numel(obj.TEXT)==obj.I
         L=0;
@@ -347,7 +354,9 @@ classdef SGFReader < handle
     end
     
     function splitMultiPROPS(obj)
-      % 由于存在B[]AB[]...AW[]的情形，应当拆分为B[],AB[]...和AW[]三个顺承节点
+      % Considering that it may exists cases like "B[]AB[]...AW[]AE[]" 
+      % informal content, we must split into B[],AB[],AW[]and AE[] four
+      % nodes in a direct line.
       
       S=obj.CURRENT_STONE;
       if(isempty(S.SGFPROPS)), return, end
@@ -382,7 +391,8 @@ classdef SGFReader < handle
             obj.CURRENT_STONE.SGFPROPVAL=SGFPROPVAL(DIV(jj):e);
           end
           
-          % 如果节点扩展后应当以扩展后的节点作为新分支，替换新分支节点
+          % Be careful, subsitute the origin ancestor node as the current
+          % son-node.
           if(obj.JustAddedBranch)
             obj.BRANCH{obj.CURRENT_DEPTH}{end}=obj.CURRENT_STONE;
           end
@@ -415,6 +425,7 @@ classdef SGFReader < handle
     end
     
     function createProgressBar(obj)
+      % initialize the new progress bar
       
       fig = waitbar(0, 'Parsing SGF data...','Visible','off');
       obj.ProgressBar=fig;
@@ -422,10 +433,23 @@ classdef SGFReader < handle
     end
     
     function autoEncodingCheck(obj)
+      % Executing simple auto-encoding check for the SGF file, reading the
+      % first line which contains 'utf8' or 'gbk', then we catch them as
+      % the encoding character.
       
-      default_encoding='utf8';
-      fid = fopen(obj.Filename,'r');
-      
+      if(ischar(obj.Filename))
+        if(exist(obj.Filename,'file')~=0)
+          ecoding_guess='utf8';
+          fid=fopen(obj.Filename,'r','native',ecoding_guess);
+          o = onCleanup(@() fclose(fid));
+          line=fgetl(fid);
+          e=regexp(line,'CA\[(.*?)\]','tokens');
+          if(~isempty(e))
+            e=e{1}{1};
+            obj.Encoding=e;
+          end
+        end
+      end
       
     end
     

@@ -10,6 +10,8 @@ classdef GoViewer < handle
     function fig = start()
       % 启动围棋软件的图形界面
 
+      GoViewer.addpath()
+      
       % 初始化图形界面
       fig = GoViewer.initGoViwerFigure();
       
@@ -426,9 +428,20 @@ classdef GoViewer < handle
       
     end
   
+    function addpath()
+      
+      Root=fileparts(fileparts(mfilename('fullpath')));
+      %addpath(fullfile(Root,'@CallbackSet'));
+      addpath(fullfile(Root));
+      addpath(fullfile(Root,'obj'));
+      addpath(fullfile(Root,'fun'));
+      
+    end
+    
   end
   
 end
+
 
 function moveFigureCenter(fig,lw)
 % 将图像对象移动至屏幕中央
