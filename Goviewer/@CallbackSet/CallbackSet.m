@@ -68,6 +68,10 @@ classdef CallbackSet < handle
     CommentClosedCallback(h,e);
   end
   
+  methods(Static)
+    StoneNodeExpandCallback(h,e,option);
+  end
+  
 end
 
 

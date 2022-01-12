@@ -9,6 +9,7 @@ classdef Stone < handle
     order = 0;      % 落子序号（初始化0）
     comment         char
     move_number     % MN属性
+    note = [];      % 
   end
   
   properties(Hidden=false,AbortSet,SetObservable)
@@ -443,6 +444,8 @@ classdef Stone < handle
                   obj.comment=obj.SGFPROPVAL{idx}(2:end-1);
                 case {'MN'}
                   obj.move_number=str2double(obj.SGFPROPVAL{idx}(2:end-1));
+                case {'N'}
+                  obj.note=obj.SGFPROPVAL{idx}(2:end-1);
               end
             end
             refreshOrderProp(obj); %

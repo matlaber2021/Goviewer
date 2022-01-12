@@ -76,6 +76,9 @@ out.stone1=stone1;
           y=pToMove(i,2);
           if(state1(x,y)~=0)
             fprintf('存在落子错误[status=2].\n');
+            % BUGFIX
+            stone1.pClearedStone=[x,y];
+            stone1.sClearedStone=state1(x,y);
           end
           state1(x,y)=stone1.side;
         end

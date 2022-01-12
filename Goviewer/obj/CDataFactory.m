@@ -32,6 +32,7 @@ classdef CDataFactory < handle
     Edit    % 编辑
     ScanShot% 截图
     Comment % 评论
+    Tree    % 树
     
   end
   
@@ -627,6 +628,25 @@ classdef CDataFactory < handle
         o o o o o o o o o o o o o o o o
         ];
       
+      obj.Tree.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o k k k k o o o o o o
+        o o o o o k k k k k k o o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o k k k k k k k k k k o o o
+        o o o k k k k k k k k k k o o o
+        o o o k k k k k k k k k k o o o
+        o o o k k k k k k k k k k o o o
+        o o o o k k k k k k k k o o o o
+        o o o o o k k k k k k o o o o o
+        o o o o o o o k k o o o o o o o
+        o o o o o o o k k o o o o o o o
+        o o o o o o o k k o o o o o o o
+        o o o o o o o k k o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
       obj.Black.hotspot = [8,8];
       obj.White.hotspot = [8,8];
       obj.Rotate.hotspot = [8,8];
@@ -657,6 +677,7 @@ classdef CDataFactory < handle
       obj.Edit.hotspot = [6,6];
       obj.ScanShot.hotspot = [8,8];
       obj.Comment.hotspot = [8,8];
+      obj.Tree.hotspot = [8,8];
       
     end
     

@@ -6,7 +6,7 @@ classdef SGFReader < handle
   
   properties
     Filename
-    Encoding    = 'utf8'; % utf8
+    Encoding    = []; % utf8
     FileID
     ShowProgressBar = 1;
   end

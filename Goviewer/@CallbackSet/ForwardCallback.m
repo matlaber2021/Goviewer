@@ -42,6 +42,7 @@ for idx=1:size(pp,1)
     else
       hh = patch('parent',ax,'xdata',x,'ydata',y,'FaceColor','k');
       set(hh,'tag','stone','userdata',pp(idx,:));
+      set(hh,'DataTipTemplate',stone1.note);
     end
   elseif(state1(pp(idx,1),pp(idx,2))==2)
     if(~isempty(hh))
@@ -49,6 +50,7 @@ for idx=1:size(pp,1)
     else
       hh = patch('parent',ax,'xdata',x,'ydata',y,'FaceColor','w');
       set(hh,'tag','stone','userdata',pp(idx,:));
+      set(hh,'DataTipTemplate',stone1.note);
     end
   end
 end
