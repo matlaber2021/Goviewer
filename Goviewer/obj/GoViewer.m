@@ -186,6 +186,11 @@ classdef GoViewer < handle
       hButton_Comment = uipushtool(hTBar2,'CData',CData2RGB(obj.Comment.cdata) );
       set(hButton_Comment,'ClickedCallback',@CallbackSet.CommentCallback);
       set(hButton_Comment,'Tooltip','comment');
+      
+      hButton_Tree = uipushtool(hTBar2,'CData',CData2RGB(obj.Tree.cdata) );
+      set(hButton_Tree,'ClickedCallback',@CallbackSet.TreeNodeCallback);
+      set(hButton_Tree,'Tooltip','tree node');
+      
     end
 
     function initUserDataManager(fig)

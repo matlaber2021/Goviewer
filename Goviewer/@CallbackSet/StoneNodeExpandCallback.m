@@ -19,7 +19,7 @@ end
 if(~isempty(node.Children))
   cnodes=node.Children;
   for i=1:length(cnodes)
-    StoneNodeExpandCallback(cnodes(i),[],0);
+    CallbackSet.StoneNodeExpandCallback(cnodes(i),[],0);
   end
   return
 end
@@ -43,9 +43,10 @@ if(rem(layer,2)==0)
   while(1)
     node1=uitreenode(node);
     stone1=stone1.children(1);
-    str=displaySGFInfo(stone1);
-    node1.Text=str(1:min(length(str),10));
+    %str=displaySGFInfo(stone1);
+    %node1.Text=str(1:min(length(str),10));
     node1.NodeData=stone1;
+    updateNodeInfo(node1);
     if(isempty(stone1.children))
       break
     end
@@ -54,16 +55,17 @@ elseif(rem(layer,2)==1)
   for idx=2:L
     node1=uitreenode(node);
     stone1=stone.children(idx);
-    str=displaySGFInfo(stone1);
-    node1.Text=str(1:min(length(str),10));
+    %str=displaySGFInfo(stone1);
+    %node1.Text=str(1:min(length(str),10));
     node1.NodeData=stone1;
+    updateNodeInfo(node1);
   end
 end
 
 if(option)
   cnodes=node.Children;
   for i=1:length(cnodes)
-    StoneNodeExpandCallback(cnodes(i),[],0);
+    CallbackSet.StoneNodeExpandCallback(cnodes(i),[],0);
   end
 end
     

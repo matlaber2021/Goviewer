@@ -33,7 +33,8 @@ classdef CDataFactory < handle
     ScanShot% 截图
     Comment % 评论
     Tree    % 树
-    
+    BlackIcon
+    WhiteIcon
   end
   
   methods
@@ -647,6 +648,44 @@ classdef CDataFactory < handle
         o o o o o o o o o o o o o o o o
         ];
       
+      obj.BlackIcon.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o k k k k o o o o o o
+        o o o o k k k k k k k k o o o o
+        o o o k k k k k k k k k k o o o
+        o o o k k k k k k k k k k o o o
+        o o k k k k k k k k k k k k o o
+        o o k k k k k k k k k k k k o o
+        o o k k k k k k k k k k k k o o
+        o o k k k k k k k k k k k k o o
+        o o o k k k k k k k k k k o o o
+        o o o k k k k k k k k k k o o o
+        o o o o k k k k k k k k o o o o
+        o o o o o o k k k k o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
+      obj.WhiteIcon.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o k k k k o o o o o o
+        o o o o k k k o o k k k o o o o
+        o o o k k o o o o o o k k o o o
+        o o o k o o o o o o o o k o o o
+        o o k k o o o o o o o o k k o o
+        o o k o o o o o o o o o o k o o
+        o o k o o o o o o o o o o k o o
+        o o k k o o o o o o o o k k o o
+        o o o k o o o o o o o o k o o o
+        o o o k k o o o o o o k k o o o
+        o o o o k k k o o k k k o o o o
+        o o o o o o k k k k o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
       obj.Black.hotspot = [8,8];
       obj.White.hotspot = [8,8];
       obj.Rotate.hotspot = [8,8];
@@ -678,6 +717,8 @@ classdef CDataFactory < handle
       obj.ScanShot.hotspot = [8,8];
       obj.Comment.hotspot = [8,8];
       obj.Tree.hotspot = [8,8];
+      obj.BlackIcon.hotspot =[8,8];
+      obj.WhiteIcon.hotspot =[8,8];
       
     end
     
