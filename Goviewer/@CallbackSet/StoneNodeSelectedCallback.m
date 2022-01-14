@@ -1,21 +1,39 @@
-function flag = BackwardCallback(h,e)
-% 后退回调函数，该函数不会对棋子状态做任何修改
+function StoneNodeSelectedCallback(h,e)
 
-flag = 0;
-fig = ancestor(h,'figure');
+CallbackSet.StoneNodeExpandCallback(h,e);
+
+node=h.SelectedNodes;
+if(isempty(node)), return; end
+
+ufig=ancestor(h,'figure');
+fig=get(ufig,'UserData');
 ax=findobj(fig,'type','axes');
-Manager = get(fig,'UserData');
-o1 = onCleanup(@() CallbackSet.CommentSyncCallback(h,e) );
-o2 = onCleanup(@() UpdateStoneMarker(h) );
-o3 = onCleanup(@() UpdateStoneOrder(h) );
-o4 = onCleanup(@() ShowChildNodePath(h));
-o5 = onCleanup(@() updateStoneLabels(h) );
-
+Manager=get(fig,'UserData');
+stone0=Manager.DATA.CURRENT_STONE;
 state0=Manager.DATA.CURRENT_STATE;
 
-backwardfun(fig);
+o1 = onCleanup(@() CallbackSet.CommentSyncCallback(fig,[]) );
+o2 = onCleanup(@() UpdateStoneMarker(fig) );
+o3 = onCleanup(@() UpdateStoneOrder(fig) );
+o4 = onCleanup(@() ShowChildNodePath(fig));
+o5 = onCleanup(@() updateStoneLabels(fig));
+
+stone1=node.NodeData;
+route=getStoneRoute(stone0,stone1);
+for idx=1:length(route.direction)
+  if(route.direction(idx)==-1)
+    backwardfun(fig);
+  elseif(route.direction(idx)==1)
+    forwardfunToChild(fig,route.index(idx));
+  end
+end
+
 state1=Manager.DATA.CURRENT_STATE;
-stone1=Manager.DATA.CURRENT_STONE;
+stone1_=Manager.DATA.CURRENT_STONE;
+
+if(~isequal(stone1,stone1_))
+  error('路径错误，原因待排查...');
+end
 
 [rr,cc]=find(state1~=state0);
 pp=[rr,cc];
@@ -48,4 +66,7 @@ for idx=1:size(pp,1)
     end
   end
 end
-%stone1.HasBeenPlayedOnBoard=1;
+stone1.HasBeenPlayedOnBoard=1;
+
+
+

@@ -10,6 +10,7 @@ classdef Stone < handle
     comment         char
     move_number     % MN属性
     note = [];      % 
+    label = '';     % 
   end
   
   properties(Hidden=false,AbortSet,SetObservable)
@@ -19,6 +20,7 @@ classdef Stone < handle
     SGFPROPS        %
     SGFPROPVAL      %
     HasBeenPlayedOnBoard = 0;  % 是否棋盘上摆过
+    ShownInTreeNode = 0;
   end
   
   methods
@@ -115,7 +117,7 @@ classdef Stone < handle
     end
     
     function root = findAncestor(obj)
-      % 找到根节点
+      % find out the root Stone.
       
       root = obj;
       while ~isempty(root.parent)
@@ -124,9 +126,14 @@ classdef Stone < handle
     end% findAncestor
     
     function [branch,idx,L] = findLastBranch(obj)
-      % 上一节点分支（不包括自身）
+      % Find the last branch, not contains self.
+      %
+      % Output
+      % branch: the last branch
+      % L: the distance between the branch and the object self.
+      % idx: obj is in the <idx>th branch.
       
-      idx=1; % 初始化
+      idx=1; % initialize index
       L = 0;
       %branch = obj.parent;
       %branch0 = [];
@@ -162,18 +169,18 @@ classdef Stone < handle
     end % findLastBranch
     
     function deleteStone(obj)
-      % 删除棋子
+      % Delete the Stone and its offspring. 
       
-      % 断子绝孙
+      % destory the offspring of object.
       son = findall(obj);
       for i = 1:length(son)
         delete(son(i));
       end
       
-      % 自我毁灭
+      % destory itself
       o = onCleanup(@() delete(obj));
       
-      % 切断父子关系
+      % cut off the membership of it
       if ~isempty(obj.parent)
         c = obj.parent.children;
         N = numel(c);
@@ -188,7 +195,7 @@ classdef Stone < handle
     end% deleteStone
     
     function [newstone,down] = findNextStone(obj)
-      % 找到下一枚棋子
+      % Find the next stone, using preorder-traversal way.
       
       down=0;
       if ~isempty(obj.children)
@@ -385,7 +392,7 @@ classdef Stone < handle
       
       % Update log
       % 2022/1/10       Add "AE" props. 
-      %
+      % 2022/1/12       Add "N" props.
       
       if(option==-1)
         if(~isempty(obj.SGFPROPS))
@@ -446,6 +453,9 @@ classdef Stone < handle
                   obj.move_number=str2double(obj.SGFPROPVAL{idx}(2:end-1));
                 case {'N'}
                   obj.note=obj.SGFPROPVAL{idx}(2:end-1);
+                case {'LB'}
+                  % LB[nb:A][pb:B]
+                  obj.label = obj.SGFPROPVAL{idx};
               end
             end
             refreshOrderProp(obj); %
@@ -519,6 +529,70 @@ classdef Stone < handle
       end
       
     end % SGFInfoSyncFun
+    
+    function [p,nth] = getParent(obj)
+      % Find the parent object and also find-out the nth children of it.
+      % The submethod for getStoneRoute.
+      %
+      % Output
+      % p: the parent Stone object of obj
+      % nth: obj is the nth children of p, default as 1 even if p is empty
+      
+      p=obj.parent;
+      nth=1;
+      
+      if(~isempty(p))
+        c=p.children;
+        for idx=1:length(c)
+          if(isequal(obj,c(idx)))
+            nth=idx;
+            break
+          end
+        end
+      end
+      
+    end
+    
+    
+    function route=getStoneRoute(origin,destination)
+      % Find the route from the origin point to the target point, build
+      % this function in order to prepare for moving back and forth from
+      % two different tree-nodes, the route algorithm is low-efficient,
+      % maybe optimized in the future, which based on the pratical results.
+      %
+      % Input and Output
+      % origin: the origin Stone
+      % destination: the target Stone
+      % route: is a route struct with fields of direction and index.
+      
+      direction1=[];
+      index1=[];
+      node=origin;
+      while(1)
+        if isempty(node.parent)
+          break
+        end
+        [node,nth]=getParent(node);
+        direction1(end+1,1)=-1; %#ok
+        index1(end+1,1)=nth; %#ok
+      end
+      
+      direction2=[];
+      index2=[];
+      node=destination;
+      while(1)
+        if isempty(node.parent)
+          break
+        end
+        [node,nth]=getParent(node);
+        direction2(end+1,1)=+1; %#ok
+        index2(end+1,1)=nth; %#ok
+      end
+      
+      route.direction=[direction1;direction2(end:-1:1)];
+      route.index=[index1;index2(end:-1:1)];
+      
+    end
     
   end
   

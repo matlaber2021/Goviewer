@@ -67,6 +67,7 @@ while(stone.order>0)
   x=p(2);
   y=m+1-p(1);
   O=stone.order;
+  
   if O<100
     fontsize=11;
     fontname='Arial';
@@ -97,7 +98,12 @@ while(stone.order>0)
     end
   end
   
+  if(O==1)
+    break
+  end
+  
   stone=stone.parent;
   NUM=NUM+1;
+  
 end
 
