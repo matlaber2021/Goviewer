@@ -90,29 +90,37 @@ classdef GoPrinter < handle
         add = displaySGFInfo(Node);
         if(~isempty(add))
           o = addString(o,[';',add]);
+          num=getLastLineStrLength(o);
+          if(num>20)
+            o = addString(o,newline);
+          end
         end
         cNode=Node.children;
         
         % DOWN参数表示回归的树层级，DOWN参数为1则表示回归过1次树枝节点
-        [Node,down]=findNextStone(Node);
+        [Node0,down]=findNextStone(Node);
         
         if(isempty(cNode))
-          if(~isempty(Node))
+          if(~isempty(Node0))
             suffix=repmat(')',[1,down]);
             o=addString(o,suffix);
+            o=addString(o,newline);
             o=addString(o,[newline,'(']); % BUGFIX
           else
             % 此处为识别到最后一个节点，由此结束程序
             suffix=repmat(')',[1,down]);
             o=addString(o,suffix);
+            o=addString(o,newline);
             o=addString(o,')');
+            obj.SGFData=o;
             return
           end
         elseif(length(cNode)>1)
           o = addString(o,[newline,'(']);
         end
         
-        obj.SGFData=o;
+        %obj.SGFData=o;
+        Node=Node0;
         
       end
     end% PrintSGF
@@ -142,4 +150,25 @@ classdef GoPrinter < handle
   end
   
   
+end
+
+function in=addString(in,add)
+
+N=length(add);
+in(end+1:end+N)=add;
+
+end
+
+function num=getLastLineStrLength(str)
+
+num=0;
+while(1)
+  if isequal(str(end-num),newline)
+    break
+  else
+    num=num+1;
+  end
+  
+end
+
 end

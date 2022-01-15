@@ -29,6 +29,7 @@ classdef CallbackSet < handle
   
   methods(Static)
     FileImportCallback(h,e);
+    SaveFileCallback(h,e);
     DefaultModeCallback(h,e);
     DefaultCallback(h,e);
     BlackAddCallback(h,e);
