@@ -72,6 +72,7 @@ classdef CallbackSet < handle
     TreeNodeCallback(h,e);
     StoneNodeExpandCallback(h,e,arg);
     StoneNodeSelectedCallback(h,e,arg);
+    TreeClosedCallback(h,e);
   end
   
 end

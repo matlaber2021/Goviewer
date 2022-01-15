@@ -406,7 +406,7 @@ classdef GoViewer < handle
     end
     
     function ufig = CreateCommentWindow(fig)
-      % 生成弹窗
+      % 生成评论弹窗
       
       ufig=uifigure('Name','Comment',...
         'CloseRequestFcn',@CallbackSet.CommentClosedCallback);
@@ -414,7 +414,7 @@ classdef GoViewer < handle
       gap=24;
       if(strcmpi(fig.Units,'pixels'))
         p0=get(fig,'Position');
-        p1=get(fig,'OuterPosition');
+        %p1=get(fig,'OuterPosition');
       end
       obj=CDataFactory;
       ufig.Position=[p0(1)+p0(3)+gap,p0(2)+p0(4)-200,300,200];
@@ -430,6 +430,38 @@ classdef GoViewer < handle
       Manager.WINDOW.COMMENT_WINDOW=ufig;
       stone=Manager.DATA.CURRENT_STONE;
       textarea.Value=stone.comment;
+      
+    end
+    
+    function ufig = CreateTreeWindow(fig)
+      % 生成树弹窗
+      
+      Manager=get(fig,'UserData');
+      stone=Manager.DATA.CURRENT_STONE;
+      if(~isempty(stone))
+        stone=findAncestor(stone);
+      else
+        return
+      end
+      
+      ufig = uifigure('Name','Stone Tree','Visible','off',...
+        'CloseRequestFcn',@CallbackSet.TreeClosedCallback);
+      ufig.Position(3)=750;
+      ufig.Position(4)=600;
+      movegui(ufig,'center');
+      set(ufig,'UserData',fig);
+      o = onCleanup(@() set(ufig, 'Visible','on'));
+      
+      tree = uitree(ufig);
+      tree.UserData=stone;
+      tree.Position=[16,16,750-32,600-32];
+      tree.BackgroundColor=[0.94 0.94 0.94];
+      tree.SelectionChangedFcn=@CallbackSet.StoneNodeSelectedCallback;
+      tree.NodeExpandedFcn=@CallbackSet.StoneNodeExpandCallback;
+      NodeExpandLocalFun(tree,1);
+      Manager.WINDOW.TREE_WINDOW=ufig;
+      
+      assignin('base','tree',tree);
       
     end
   

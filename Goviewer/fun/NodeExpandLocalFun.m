@@ -1,7 +1,11 @@
 function NodeExpandLocalFun(node,option)
-% 树节点展开算法
+% Tree nodes expand algorithm, imitating from MultiGo style.
+%
+% WARN: Some tree-nodes are different from MultiGo, because some SGF
+% information when parsing may be split into multi-nodes for ease of
+% programing.
 
-o = onCleanup(@() setappdata(node,'HasExpanded',1));
+%o = onCleanup(@() setappdata(node,'HasExpanded',1));
 if(isa(node,'matlab.ui.container.Tree'))
   stone=node.UserData;
 else
@@ -16,12 +20,12 @@ if(L==1)
   stone1=stone;
   while(1)
       
-      % 如果节点没有下一节点，退出循环
+      % If the node has no children, quit from the while-loop.
       if(isempty(stone1.children))
         break
       end
       
-      % 优先找到第一个子节点，新建树节点
+      % Find the first node, then build a new tree node.
       stone1=stone1.children(1);
       if(~stone1.ShownInTreeNode)
         node1=uitreenode(node);
@@ -37,7 +41,8 @@ end
 
 if(L>1)
   
-  % 找到可以循环的子节点，避免子节点重复生成
+  % Find node which can expand, and be prevent from repeating generation as
+  % well.
   children=stone.children;
   for i=length(children):-1:1
     if(children(i).ShownInTreeNode)
@@ -57,7 +62,7 @@ if(L>1)
   
 end
 
-% 展开子节点
+% expand the child nodes.
 if(option)
   cnodes=node.Children;
   for i=1:length(cnodes)

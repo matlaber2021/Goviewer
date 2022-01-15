@@ -380,6 +380,13 @@ classdef Stone < handle
         end
       end
       
+      % BUGFIX: AE=0
+      if(obj.status==2)
+        if(obj.side==0)
+          obj.order=0;
+        end
+      end
+      
     end % refreshOrderProp
     
     function SGFInfoSyncFun(obj,option)
