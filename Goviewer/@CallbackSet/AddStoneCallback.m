@@ -5,6 +5,13 @@ fig = ancestor(h,'figure');
 ax  = findobj(fig,'type','axes');
 Manager = get(fig,'UserData');
 
+o1 = onCleanup(@() CallbackSet.CommentSyncCallback(h,e) );
+o2 = onCleanup(@() UpdateStoneMarker(h) );
+o3 = onCleanup(@() UpdateStoneOrder(h) );
+o4 = onCleanup(@() ShowChildNodePath(h));
+o5 = onCleanup(@() updateStoneLabels(h) );
+o6 = onCleanup(@() updateTreeNode(fig) );
+
 state0 = getPropValDATA(Manager,'CURRENT_STATE');
 stone0 = getPropValDATA(Manager,'CURRENT_STONE');
 
@@ -41,4 +48,4 @@ refreshOrderProp(stone1);
 setPropValDATA(Manager,'CURRENT_STONE',stone1);
 setPropValDATA(Manager,'CURRENT_STATE',state1);
 SGFInfoSyncFun(stone1,1);
-showSGFInfo(stone1);
+%showSGFInfo(stone1);

@@ -82,6 +82,8 @@ classdef GoPrinter < handle
       
       o = '(';
       Node = root;
+      %setDefaultGameInfo(Node);
+      
       while(1)
         %Node0=Node; % DEBUG
         if isempty(Node)
@@ -162,8 +164,9 @@ end
 function num=getLastLineStrLength(str)
 
 num=0;
+N=length(str);
 while(1)
-  if isequal(str(end-num),newline)
+  if num==N || isequal(str(end-num),newline)
     break
   else
     num=num+1;

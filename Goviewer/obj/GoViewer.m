@@ -224,7 +224,7 @@ classdef GoViewer < handle
       
       % 初始化棋盘数据参数
       setPropValDATA(Manager,'CURRENT_STATE',zeros([19,19]));
-      setPropValDATA(Manager,'CURRENT_STONE',Stone() );
+      setPropValDATA(Manager,'CURRENT_STONE',Stone.init() );
       setPropValDATA(Manager,'HANDICAP',0);
       setPropValDATA(Manager,'ISKOLOCKED',0);
       setPropValDATA(Manager,'NEXTSIDE',1);
@@ -463,6 +463,7 @@ classdef GoViewer < handle
       tree.SelectionChangedFcn=@CallbackSet.StoneNodeSelectedCallback;
       tree.NodeExpandedFcn=@CallbackSet.StoneNodeExpandCallback;
       NodeExpandLocalFun(tree,1);
+      tree.SelectedNodes=tree.Children(1);
       Manager.WINDOW.TREE_WINDOW=ufig;
       
       assignin('base','tree',tree);

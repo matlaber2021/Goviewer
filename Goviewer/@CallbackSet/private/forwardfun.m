@@ -3,6 +3,7 @@ function out=forwardfun(fig)
 %
 % 该函数改变棋盘数据
 
+o = onCleanup(@()updateTreeNode(fig) );
 Manager = get(fig,'UserData');
 stone0 = Manager.DATA.CURRENT_STONE;
 state0 = Manager.DATA.CURRENT_STATE;

@@ -23,18 +23,6 @@ classdef Stone < handle
     ShownInTreeNode = 0;
   end
   
-  methods(Static) 
-    function obj = init()
-      
-      obj = Stone();
-      addStone(obj,[],[]);
-      obj.children.status=0;
-      setDefaultGameInfo(obj);
-      obj=obj.children(1);
-      
-    end
-  end
-  
   methods
     function obj = Stone(sz)
       % 创建初始棋子对象
@@ -63,7 +51,6 @@ classdef Stone < handle
       
     end
   end
-  
   
   methods
     
@@ -385,7 +372,7 @@ classdef Stone < handle
         end
       end
       
-      if (obj.status==2)||(isequal(obj.side,0))
+      if(obj.status==2)||(obj.side==0)
         if(idx==1)
           obj.order=obj.parent.order; % BUGFIX
         elseif(idx>1)
@@ -633,7 +620,7 @@ classdef Stone < handle
       % N[]
       
       obj=findAncestor(obj);
-      if(~isempty(obj))
+      if(~isempty(obj.children))
         obj.children(1).SGFPROPS={'CA','AP','SZ','PB','PW','RE','KM','C','N'};
         obj.children(1).SGFPROPVAL={'[utf8]','[Goviewer]','[19]','[]',...
           '[]','[]','[]','[]','[]'};
