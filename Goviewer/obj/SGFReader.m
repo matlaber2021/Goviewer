@@ -83,7 +83,7 @@ classdef SGFReader < handle
     end
     
     function SGFParser(obj)
-      % SGF prasing step.
+      % SGF prasing step, the core function of the SGFReader object.
       
       prepareForProgressBar(obj);
       o1 = onCleanup(@() cleanup(obj.ProgressBarTimer));
@@ -225,7 +225,7 @@ classdef SGFReader < handle
   methods(Access=private,Hidden)
     function parsingPROPVAL(obj)
       % method for parsing the PROPVAL
-      
+      %
       % Maybe the usual PROPVAL is the infomation within the bracket [],
       % but unfortunately it's not. The PROPS LB(label) has multi-bracket
       % such as LB[...][...]..., so the right bracket symbol CANNOT be the
@@ -276,7 +276,7 @@ classdef SGFReader < handle
     
     function PROPS = findNextProps(obj)
       % finding the next PROPS
-      
+      %
       % PROPS must be A-Z chars, so it is easy to find the next PROPS.
       % And when parsing '[' symbol as I mentioned eariler, you can get the
       % completely PROPS, also considering of skipping the empty chars.

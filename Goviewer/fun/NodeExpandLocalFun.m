@@ -12,6 +12,8 @@ else
   stone=node.NodeData;
 end
 
+if(nargin<2), option=1; end
+
 children=stone.children;
 L=length(children);
 if(L==0), return; end

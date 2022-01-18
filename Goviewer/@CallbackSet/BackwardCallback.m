@@ -1,7 +1,13 @@
-function flag = BackwardCallback(h,e)
-% 后退回调函数，该函数不会对棋子状态做任何修改
+function BackwardCallback(h,e)
+% Backward callback, Noticing that the backward does not perform an inverse
+% operation, relative to the forward callback. Backward only fall back to 
+% the parent node. And the backward callback would not change the Stone 
+% hierarchical structure.
+%
+% Warning:
+% The HasBeenPlayedOnBoard property is 1, the backward step will not change
+% the state of HasBeenPlayedOnBoard.
 
-flag = 0;
 fig = ancestor(h,'figure');
 ax=findobj(fig,'type','axes');
 Manager = get(fig,'UserData');
@@ -10,18 +16,19 @@ o2 = onCleanup(@() UpdateStoneMarker(h) );
 o3 = onCleanup(@() UpdateStoneOrder(h) );
 o4 = onCleanup(@() ShowChildNodePath(h));
 o5 = onCleanup(@() updateStoneLabels(h) );
+o6 = onCleanup(@() updateStoneNode(fig) );
 
 state0=Manager.DATA.CURRENT_STATE;
 
 backwardfun(fig);
 state1=Manager.DATA.CURRENT_STATE;
-stone1=Manager.DATA.CURRENT_STONE;
+%stone1=Manager.DATA.CURRENT_STONE;
 
 [rr,cc]=find(state1~=state0);
 pp=[rr,cc];
 [m,n]=size(state1);%#ok
-theta = linspace(0,2*pi,20);
-r=0.45;
+theta = Manager.CONFIG.THETAFORCIRCLE;
+r=Manager.CONFIG.STONERADIUS;
 
 for idx=1:size(pp,1)
   x=cc(idx)+r*cos(theta)';

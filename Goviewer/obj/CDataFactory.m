@@ -33,7 +33,7 @@ classdef CDataFactory < handle
     ScanShot% 截图
     Comment % 评论
     Tree    % 树
-    
+    BlackIcon
     WhiteIcon
   end
   

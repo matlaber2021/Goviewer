@@ -43,3 +43,6 @@ if(~isempty(node.NodeData))
   node.Text=nodetext;
   
 end
+
+stone.ShownInTreeNode=1;
+stone.TreeNode=node;

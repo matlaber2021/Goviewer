@@ -22,9 +22,9 @@ stone1=node.NodeData;
 route=getStoneRoute(stone0,stone1);
 for idx=1:length(route.direction)
   if(route.direction(idx)==-1)
-    backwardfun(fig);
+    backwardfun(fig,0);
   elseif(route.direction(idx)==1)
-    forwardfunToChild(fig,route.index(idx));
+    forwardfunToChild(fig,route.index(idx),0);
   end
 end
 

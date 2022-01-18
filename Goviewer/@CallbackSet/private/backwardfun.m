@@ -1,4 +1,6 @@
 function out=backwardfun(fig)
+% The local sub-function of BackwardCallback function. The backwardfun will
+% change the board data after doing backward step.
 
 Manager = get(fig,'UserData');
 stone0 = Manager.DATA.CURRENT_STONE;

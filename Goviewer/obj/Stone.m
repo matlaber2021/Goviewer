@@ -21,6 +21,7 @@ classdef Stone < handle
     SGFPROPVAL      %
     HasBeenPlayedOnBoard = 0;  % 是否棋盘上摆过
     ShownInTreeNode = 0;
+    TreeNode
   end
   
   methods(Static) 

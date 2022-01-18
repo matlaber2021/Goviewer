@@ -1,9 +1,9 @@
 function out=forwardfunToChild(fig,idx)
-% 前进函数，找到当前节点的下一个子节点，并不涉及到切换分支的情形
-%
-% Node -> Node.children(idx)
-%
-% copy from forwardfun.m
+% forwardfunToChild is another local sub-function of ForwardCallback 
+% function. Unlike the forwardfun function, this function resolves the
+% second case of the forwarding step. The <idx> input argument means go to
+% the {idx}th of the current stone, this function don't need to follow the
+% preorder-traversal strictly.
 
 Manager = get(fig,'UserData');
 stone0 = Manager.DATA.CURRENT_STONE;
@@ -30,7 +30,7 @@ if(isempty(stone1))
   return
 end
 
-% 正常落子（不跳转分支）
+% Moving in normal way, not considering of branch case.
 if(~isempty(stone1))
   updateStoneAndState;
 end
@@ -75,7 +75,8 @@ out.stone1=stone1;
           x=pToMove(i,1);
           y=pToMove(i,2);
           if(state1(x,y)~=0)
-            fprintf('存在落子错误[status=2].\n');
+            fprintf('Overlapping the original point[status=2].\n');
+            
             % BUGFIX
             stone1.pClearedStone=[x,y];
             stone1.sClearedStone=state1(x,y);
@@ -91,14 +92,16 @@ out.stone1=stone1;
         if(~stone1.HasBeenPlayedOnBoard)
           result=tryMove(state1,stone1.side,stone1.position);
           if(result.code~=0 && result.code~=-1)
-            error('存在落子错误[errcode=%d].\n',result.code);
+            error('The wrong move happens[errcode=%d].\n',result.code);
           elseif(result.code==-1)
-            fprintf('重叠原来位置[errcode=-1].\n');
+            fprintf(2, 'Overlapping the original point[errcode=-1].\n');
             stone1.pRemovedStone=[];
             x=stone1.position(1);
             y=stone1.position(2);
             
-            % 待恢复的棋子放入AE的专有属性里
+            % Overlapping does not means the error, we can put the replaced
+            % stone inside the exclusive property. And we will restore it
+            % correctly by using backwardfun function.
             stone1.pClearedStone=[x,y];
             stone1.sClearedStone=state1(x,y);
             state1(x,y)=stone1.side;

@@ -11,6 +11,7 @@ classdef UserDataManager < handle
   
   properties(Hidden)
     OPTIONSET_LEELAZERO % LeelaZero设置
+    SKIP_TREENODE = 0;
   end
   
   methods

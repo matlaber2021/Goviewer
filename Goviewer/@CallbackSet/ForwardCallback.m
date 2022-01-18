@@ -1,9 +1,15 @@
-function flag = ForwardCallback(h,e,idx)
-% 前进回调函数，该函数不会对棋子状态做任何修改
+function ForwardCallback(h,e,idx)
+% Forwarding callback
 %
-% Hint：flag表示的是是否执行有效的标记
+% ForwardCallback(handle,event)  Forward way follows preorder-traversal of
+% the Stone tree-struct.
+%
+% ForwardCallback(handle,event,index) Getting to the nth children of the
+% current stone, is much easier than the preorder-traversal method.
+%
+% Hint:
+% ForwardCallback would not change the Stone hierarchical structure.
 
-flag = 0;
 fig = ancestor(h,'figure');
 ax=findobj(fig,'type','axes');
 Manager = get(fig,'UserData');
@@ -12,6 +18,7 @@ o2 = onCleanup(@() UpdateStoneMarker(h) );
 o3 = onCleanup(@() UpdateStoneOrder(h) );
 o4 = onCleanup(@() ShowChildNodePath(h));
 o5 = onCleanup(@() updateStoneLabels(h) );
+o6 = onCleanup(@() updateStoneNode(fig) );
 
 state0=Manager.DATA.CURRENT_STATE;
 
@@ -56,6 +63,3 @@ for idx=1:size(pp,1)
   end
 end
 stone1.HasBeenPlayedOnBoard=1;
-
-
-

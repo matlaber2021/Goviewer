@@ -1,9 +1,10 @@
 function out=forwardfun(fig)
-% 前进函数
-%
-% 该函数改变棋盘数据
+% The local sub-function of ForwardCallback function. The forwardfun will
+% change the board data after doing forward step. There are two ways of
+% forward step: click the forward uitool button and click the cross-over
+% point on the board to skip to the nth child of the current stone. This
+% function deals with the first case.
 
-o = onCleanup(@()updateTreeNode(fig) );
 Manager = get(fig,'UserData');
 stone0 = Manager.DATA.CURRENT_STONE;
 state0 = Manager.DATA.CURRENT_STATE;
@@ -24,7 +25,7 @@ if(isempty(stone1))
   return
 end
 
-% 正常落子（不跳转分支）
+% Moving in normal way, not considering of branch case.
 if(~isempty(stone1))
   if(down==0)
     updateStoneAndState;
@@ -91,8 +92,9 @@ out.stone1=stone1;
           x=pToMove(i,1);
           y=pToMove(i,2);
           if(state1(x,y)~=0)
-            fprintf('存在落子错误[status=2].\n');
-            % BUGFIX
+            fprintf('Overlapping the original point[status=2].\n');
+            
+            % BUGFIX: The overlapping case.
             stone1.pClearedStone=[x,y];
             stone1.sClearedStone=state1(x,y);
           end
@@ -107,14 +109,16 @@ out.stone1=stone1;
         if(~stone1.HasBeenPlayedOnBoard)
           result=tryMove(state1,stone1.side,stone1.position);
           if(result.code~=0 && result.code~=-1)
-            error('存在落子错误[errcode=%d].\n',result.code);
+            error('The wrong move happens[errcode=%d].\n',result.code);
           elseif(result.code==-1)
-            fprintf('重叠原来位置[errcode=-1].\n');
+            fprintf(2, 'Overlapping the original point[errcode=-1].\n');
             stone1.pRemovedStone=[];
             x=stone1.position(1);
             y=stone1.position(2);
             
-            % 待恢复的棋子放入AE的专有属性里
+            % Overlapping does not means the error, we can put the replaced
+            % stone inside the exclusive property. And we will restore it
+            % correctly by using backwardfun function.
             stone1.pClearedStone=[x,y];
             stone1.sClearedStone=state1(x,y);
             state1(x,y)=stone1.side;

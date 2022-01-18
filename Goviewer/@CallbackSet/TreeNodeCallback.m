@@ -1,7 +1,6 @@
 function TreeNodeCallback(h,e) %#ok
-% Tree-Chart callback
+% Tree-Chart callback, establish the new but only one tree node chart.
 %
-% TODO: 加入交互功能
 
 fig=ancestor(h,'figure');
 Manager=get(fig,'UserData');

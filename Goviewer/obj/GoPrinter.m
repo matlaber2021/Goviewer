@@ -21,6 +21,7 @@ classdef GoPrinter < handle
     end
     
     function CaptureScreen(obj)
+      % A simple java method to capture a screenshot.
       
       obj.jRobot = java.awt.Robot();
       obj.jRectangle = java.awt.Rectangle();
@@ -73,7 +74,7 @@ classdef GoPrinter < handle
     end
     
     function o = PrintSGF(obj)
-      % 打印SGF节点
+      % Print out as SGF data.
       
       fig=obj.Figure;
       Manager=get(fig,'UserData');
@@ -92,6 +93,8 @@ classdef GoPrinter < handle
         add = displaySGFInfo(Node);
         if(~isempty(add))
           o = addString(o,[';',add]);
+          
+          % Taking line breaks to beautify the output.
           num=getLastLineStrLength(o);
           if(num>20)
             o = addString(o,newline);
@@ -99,7 +102,8 @@ classdef GoPrinter < handle
         end
         cNode=Node.children;
         
-        % DOWN参数表示回归的树层级，DOWN参数为1则表示回归过1次树枝节点
+        % DOWN parameter is the layer of return, down=1 means that wen can
+        % only trace back to the last branch object.
         [Node0,down]=findNextStone(Node);
         
         if(isempty(cNode))
@@ -109,7 +113,8 @@ classdef GoPrinter < handle
             o=addString(o,newline);
             o=addString(o,[newline,'(']); % BUGFIX
           else
-            % 此处为识别到最后一个节点，由此结束程序
+            % Here is the last stone object being recognized, and after
+            % that the print preocedure finishs.
             suffix=repmat(')',[1,down]);
             o=addString(o,suffix);
             o=addString(o,newline);
@@ -128,6 +133,7 @@ classdef GoPrinter < handle
     end% PrintSGF
     
     function WriteSGF(obj,filename)
+      % Write SGF data to a file with ".sgf" suffix.
       
       if(isempty(obj.SGFData)), return; end
       [~,~,ext] = fileparts(filename);

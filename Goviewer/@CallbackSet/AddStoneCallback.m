@@ -10,7 +10,7 @@ o2 = onCleanup(@() UpdateStoneMarker(h) );
 o3 = onCleanup(@() UpdateStoneOrder(h) );
 o4 = onCleanup(@() ShowChildNodePath(h));
 o5 = onCleanup(@() updateStoneLabels(h) );
-o6 = onCleanup(@() updateTreeNode(fig) );
+o6 = onCleanup(@() updateStoneNode(fig) );
 
 state0 = getPropValDATA(Manager,'CURRENT_STATE');
 stone0 = getPropValDATA(Manager,'CURRENT_STONE');
