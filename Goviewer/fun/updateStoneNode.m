@@ -7,9 +7,9 @@ function updateStoneNode(h)
 % function does not work.
 %
 % After the function finished, the selected node will changed to the new
-% node and it will scroll to the position of the target node. Make sure 
-% that the NodeData property value of the target node is equal to the 
-% current stone.  
+% node and it will scroll to the position of the target node. Make sure
+% that the NodeData property value of the target node is equal to the
+% current stone.
 
 f=ancestor(h,'figure');
 if(strcmp(f.Name,'Stone Tree'))
@@ -66,30 +66,62 @@ if(stone1.ShownInTreeNode)
   end
   
 elseif(~stone1.ShownInTreeNode)
+  
+  % BUGFIX
+  %
+  % If the stone has no node, need to establish a new tree node. We assume
+  % that the parent stone must have node. If the stone is the first child,
+  % then add the sibling stone. If the stone is not the first child, add
+  % the new treenode from the parent node. But MultiGo seems not that.
+  %
+  % Looking to the origin node, if the origin node's layer, if the layer is
+  % odd number, turn to case 1, but if even, then turn to case 2.
+  %
+  % Case 1
+  % If the first child, then build a new sibling node.
+  % If not the first, add a child node from the parent node.
+  %
+  % Case 2
+  % Add a child node directly from the parent node.
+  %
+  % Warning:
+  % In the preorder-traversal mode, parent node still exists.
+  %
+  % TODO
+  % Maybe we could consider more general case, the pnode doesn't exist, we
+  % can go back to the original stone with node. And layer unfolding.
+  
+  if(isempty(stone1.parent))
+    tree.SelectedNodes=[];
+    return
+  end
+  
+  
   stone=stone1;
-  depth=0;
   index=[];
   while(1)
-    depth=depth+1;
-    [stone,nth]=getParent(stone);
-    index(end+1)=nth; %#ok
+    [stone,index(end+1)]=getParent(stone); %#ok
     if(stone.ShownInTreeNode)
-      node=stone.TreeNode;
-      NodeExpandLocalFun(node);
       break
     end
   end
+  index=index(end:-1:1);
   
-  stone=node.NodeData;
-  for i=1:depth
-    stone=stone.children(index(i));
+  node=stone.TreeNode;
+  NodeExpandLocalFun(node.Parent);
+  node.Parent.expand();
+  NodeExpandLocalFun(node);
+  node.expand();
+  
+  for i=1:length(index)
+    idx=index(i);
+    stone=stone.children(idx);
     node=stone.TreeNode;
     NodeExpandLocalFun(node);
+    node.expand();
   end
-  tree.SelectedNodes=node;
-  scroll(tree,node);
-  if(~isequal(node.NodeData,stone1))
-    fprintf(2,'Debugging the node route bug.\n');
-  end
+  
+  tree.SelectedNodes=stone1.TreeNode;
+  scroll(tree,stone1.TreeNode);
   
 end

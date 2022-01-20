@@ -188,11 +188,13 @@ classdef Stone < handle
       % destory the offspring of object.
       son = findall(obj);
       for i = 1:length(son)
+        delete(son(i).TreeNode);
         delete(son(i));
       end
       
       % destory itself
-      o = onCleanup(@() delete(obj));
+      o1 = onCleanup(@() delete(obj.TreeNode));
+      o2 = onCleanup(@() delete(obj));
       
       % cut off the membership of it
       if ~isempty(obj.parent)

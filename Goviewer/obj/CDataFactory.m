@@ -35,6 +35,8 @@ classdef CDataFactory < handle
     Tree    % 树
     BlackIcon
     WhiteIcon
+    Stop
+    Start
   end
   
   methods
@@ -686,6 +688,44 @@ classdef CDataFactory < handle
         o o o o o o o o o o o o o o o o
         ];
       
+      obj.Stop.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o k k o o o o k k o o o o
+        o o o o k k k o o o k k o o o o
+        o o o o k k k k o o k k o o o o
+        o o o o k k k k k o k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k o k k o o o o
+        o o o o k k k k o o k k o o o o
+        o o o o k k k o o o k k o o o o
+        o o o o k k o o o o k k o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
+      obj.Start.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o k k o o o o k k o o o o
+        o o o o k k o o o k k k o o o o
+        o o o o k k o o k k k k o o o o
+        o o o o k k o k k k k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k o k k k k k o o o o
+        o o o o k k o o k k k k o o o o
+        o o o o k k o o o k k k o o o o
+        o o o o k k o o o o k k o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
       obj.Black.hotspot = [8,8];
       obj.White.hotspot = [8,8];
       obj.Rotate.hotspot = [8,8];
@@ -719,6 +759,8 @@ classdef CDataFactory < handle
       obj.Tree.hotspot = [8,8];
       obj.BlackIcon.hotspot =[8,8];
       obj.WhiteIcon.hotspot =[8,8];
+      obj.Stop.hotspot =[8,8];
+      obj.Start.hotspot=[8,8];
       
     end
     

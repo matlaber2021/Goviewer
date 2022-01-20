@@ -31,9 +31,7 @@ if(L==1)
       stone1=stone1.children(1);
       if(~stone1.ShownInTreeNode)
         node1=uitreenode(node);
-        %setappdata(node1,'HasExpanded',0);
         node1.NodeData=stone1;
-        stone1.ShownInTreeNode=1;
         updateNodeInfo(node1);
       end
       
@@ -56,9 +54,7 @@ if(L>1)
   for idx=1:LL
     stone1=children(idx);
     node1=uitreenode(node);
-    %setappdata(node1,'HasExpanded',0);
     node1.NodeData=stone1;
-    stone1.ShownInTreeNode=1;
     updateNodeInfo(node1);
   end
   

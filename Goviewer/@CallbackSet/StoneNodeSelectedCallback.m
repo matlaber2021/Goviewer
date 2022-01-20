@@ -22,9 +22,9 @@ stone1=node.NodeData;
 route=getStoneRoute(stone0,stone1);
 for idx=1:length(route.direction)
   if(route.direction(idx)==-1)
-    backwardfun(fig,0);
+    backwardfun(fig);
   elseif(route.direction(idx)==1)
-    forwardfunToChild(fig,route.index(idx),0);
+    forwardfunToChild(fig,route.index(idx));
   end
 end
 
@@ -67,6 +67,3 @@ for idx=1:size(pp,1)
   end
 end
 stone1.HasBeenPlayedOnBoard=1;
-
-
-

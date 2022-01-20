@@ -18,7 +18,7 @@ idx=1;
 
 
 for i=1:L
-  
+  NO_CALLBACK=0;
   HasPath=0;
   node=stone.children(i);
   if(~node.HasBeenPlayedOnBoard)
@@ -54,7 +54,7 @@ for i=1:L
   % BUGFIX:
   if(node.status==2)
     if(node.side==0) % AE
-      
+      NO_CALLBACK=1;
       node0=node;
       while(1)
         
@@ -117,7 +117,7 @@ for i=1:L
   if(HasPath)
     str=char(idx+64);
     if(state(m+1-y,x)==0)
-      text(ax,x,y,str,...
+      obj=text(ax,x,y,str,...
         'FontSize',fontsize,...
         'FontName',fontname,...
         'Color','b',...
@@ -125,8 +125,13 @@ for i=1:L
         'FontWeight','bold',...
         'BackgroundColor',[249 214 91]/255,...
         'HorizontalAlignment','center',...
-        'VerticalAlignment','middle', ...
-        'ButtonDownFcn',@CallbackSet.MoveStoneCallback); %TODO
+        'VerticalAlignment','middle');
+      
+      % BUGFIX
+      if(~NO_CALLBACK)
+        set(obj,'ButtonDownFcn',@CallbackSet.MoveStoneCallback);
+      end
+      
     end
     idx=idx+1;
   end

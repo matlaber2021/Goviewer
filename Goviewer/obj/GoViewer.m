@@ -450,15 +450,15 @@ classdef GoViewer < handle
       
       ufig = uifigure('Name','Stone Tree','Visible','off',...
         'CloseRequestFcn',@CallbackSet.TreeClosedCallback);
-      ufig.Position(3)=750;
-      ufig.Position(4)=600;
+      ufig.Position(3)=290;
+      ufig.Position(4)=240;
       movegui(ufig,'center');
       set(ufig,'UserData',fig);
       o = onCleanup(@() set(ufig, 'Visible','on'));
       
       tree = uitree(ufig);
       tree.UserData=stone;
-      tree.Position=[16,16,750-32,600-32];
+      tree.Position=[16,16,290-32,240-32];
       tree.BackgroundColor=[0.94 0.94 0.94];
       tree.SelectionChangedFcn=@CallbackSet.StoneNodeSelectedCallback;
       tree.NodeExpandedFcn=@CallbackSet.StoneNodeExpandCallback;

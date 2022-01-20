@@ -37,7 +37,7 @@ if(~isempty(node.NodeData))
     x=stone.position(idx,2);
     y=(19+1)-stone.position(idx,1);
     temp=sprintf('[%s]',char([x,y]+64));
-    nodetext=[nodetext,temp]; %#ok
+    nodetext=[nodetext,lower(temp)]; %#ok
   end
   nodetext=[nodetext,' ',stone.note];
   node.Text=nodetext;

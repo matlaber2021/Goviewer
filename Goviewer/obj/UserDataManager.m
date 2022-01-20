@@ -1,26 +1,29 @@
 classdef UserDataManager < handle
-  
+% USERDATAMANAGER is the management tool of Goviewer. It is designed as a
+% handle class inside the UserData of Goviewer figure, plays the role of 
+% global variable. 
+
   properties
-    CONFIG      % 棋盘配置信息
-    DATA        % 棋盘数据
-    WINDOW      % 弹窗信息
-    JUDGMENT    % 棋局胜负判断数据
-    LEELAZERO   % LeelaZero数据
-    GAMERESULT  % LeelaZero对局胜负
+    CONFIG      % Config data
+    DATA        % Board data
+    WINDOW      % Popup window
+    JUDGMENT    % Game jugement info
+    LEELAZERO   % Leelaz engine info
+    GAMERESULT  % Game result data
   end
   
   properties(Hidden)
-    OPTIONSET_LEELAZERO % LeelaZero设置
+    OPTIONSET_LEELAZERO % 
     SKIP_TREENODE = 0;
   end
   
   methods
     
     function obj = UserDataManager(S)
-      % 生成用户数据管理对象
+      % generate the user data manager object
       %
-      % obj = UserDataManager()  % 新建用户数据管理对象
-      % obj = UserDataManager(S) % 将结构体S转换成数据管理对象
+      % obj = UserDataManager()  % building a new object
+      % obj = UserDataManager(S) % force to convert to UserDataManager object 
       
       if nargin>0
         if isstruct(S)
@@ -39,43 +42,43 @@ classdef UserDataManager < handle
     end
     
     function setPropValDATA(obj,prop,val)
-      % 设置用户信息的属性值
+      % set the property value of DATA property
       
       setPropValPrivFcn(obj,'DATA',prop,val);
     end
     
     function addPropDATA(obj,prop)
-      % 添加用户属性信息
+      % add the empty property of DATA property
       
       addPropPrivateFcn(obj,'DATA',prop);
     end
     
     function delPropDATA(obj,prop)
-      % 删除用户数据的属性
+      % delete the empty of DATA property
       
       delPropPrivateFcn(obj,'DATA',prop);
     end
     
     function setPropValCONFIG(obj,prop,val)
-      % 设置用户信息的属性值
+      % set the property value of CONFIG property
       
       setPropValPrivFcn(obj,'CONFIG',prop,val);
     end
     
     function addPropCONFIG(obj,prop)
-      % 添加用户属性信息
+      % add the empty property of CONFIG property
       
       addPropPrivateFcn(obj,'CONFIG',prop);
     end
     
     function delPropCONFIG(obj,prop)
-      % 删除用户数据的属性
+      % delete the property of CONFIG property
       
       delPropPrivateFcn(obj,'CONFIG',prop);
     end
     
     function out = outputUserData(obj)
-      % 导出用户数据
+      % force to convert to structure array
       
       out = struct;
       props = properties(obj);
@@ -86,21 +89,21 @@ classdef UserDataManager < handle
     end
     
     function val = getPropValDATA(obj,prop)
-      % 获取用户数据属性值
+      % get the property value of DATA property
       
       val = getPropValPrivFcn(obj,'DATA',prop);
     end
     
     function val = getPropValCONFIG(obj,prop)
-      % 获取用户数据属性值
+      % get the property value of CONFIG property
       
       val = getPropValPrivFcn(obj,'CONFIG',prop);
     end
     
     function deleteManager(obj)
-      % 删除用户管理对象
+      % delete the manager object
       
-      % 删除LEELAZERO引擎对象
+      % remove the leelaz engine object
       if ~isempty(obj.LEELAZERO)
         if isfield(obj.LEELAZERO,'ENGINE')
           Engine = obj.LEELAZERO;
@@ -109,7 +112,7 @@ classdef UserDataManager < handle
         end
       end
       
-      % 删除所有Stone对象
+      % delete all the stone object
       delStone
       
     end
@@ -118,7 +121,7 @@ classdef UserDataManager < handle
   methods(Hidden)
     
     function setPropValPrivFcn(obj,item,prop,val)
-      % 设置用户子属性
+      % set the sub-property value
       
       if isempty(obj.(item))
         obj.(item) = struct;
@@ -130,14 +133,14 @@ classdef UserDataManager < handle
           obj.(item) = setfield(obj.(item),prop,val); %#ok
         end
       else
-        error('未知类型的"obj.%s"类型.',item);
+        error('Unknown type called "obj.%s".',item);
       end
       
       
     end
     
     function addPropPrivateFcn(obj,item,prop)
-      % 添加用户子属性
+      % add property value of sub-property value
       
       if isempty(obj.(item))
         obj.(item) = struct;
@@ -155,7 +158,7 @@ classdef UserDataManager < handle
     end
     
     function val = getPropValPrivFcn(obj,item,prop)
-      % 获取用户子信息
+      % get the user sub-infomation
       
       if isempty(obj.(item))
         val = [];
@@ -170,7 +173,7 @@ classdef UserDataManager < handle
     end
     
     function delPropPrivateFcn(obj,item,prop)
-      % 删除用户子信息
+      % delete the sub-infomation
       
       if ~isempty(obj.(item))
         if isstruct(obj.(item))

@@ -8,6 +8,10 @@ function AutoForwardCallback(h,e)
 %
 % Actually if the pausing seconds is large enough (i.e. 1,2,...), then we
 % can update tree node within the forward callback function.
+%
+% Performance
+% The node expands widely (nodes > 3000), slow! So could we abandon the
+% tree-node skip mode?
 
 fig=ancestor(h,'figure');
 Manager=get(fig,'UserData');
@@ -15,7 +19,7 @@ Manager.SKIP_TREENODE=1;
 
 while strcmp(get(h,'State'),'on')
   CallbackSet.ForwardCallback(h,e);
-  pause(0.5);
+  pause(0.2);
 end
 Manager.SKIP_TREENODE=0;
 updateStoneNode(fig);
