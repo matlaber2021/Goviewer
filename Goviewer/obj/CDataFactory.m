@@ -37,6 +37,8 @@ classdef CDataFactory < handle
     WhiteIcon
     Stop
     Start
+    Setting % 设置
+    Label   % 标签
   end
   
   methods
@@ -726,6 +728,45 @@ classdef CDataFactory < handle
         o o o o o o o o o o o o o o o o
         ];
       
+      obj.Setting.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o k k o o o o o o o
+        o o o k k o o k k o o k k o o o
+        o o o k k k k k k k k k k o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k o o k k k o o o o
+        o o k k k k o o o o k k k k o o
+        o o k k k k o o o o k k k k o o
+        o o o o k k k o o k k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o k k k k k k k k k k o o o
+        o o o k k o o k k o o k k o o o
+        o o o o o o o k k o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
+      obj.Label.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o k k k k k o o o
+        o o o o o o o k k k k k k o o o
+        o o o o o o k k k o o k k o o o
+        o o o o o k k k k o o k k o o o
+        o o o o k k k k k k k k k o o o
+        o o o k k k k k k k k k o o o o
+        o o o k k k k k k k k o o o o o
+        o o o o k k k k k k o o o o o o
+        o o o o o k k k k o o o o o o o
+        o o o o o o k k o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
+      
       obj.Black.hotspot = [8,8];
       obj.White.hotspot = [8,8];
       obj.Rotate.hotspot = [8,8];
@@ -761,6 +802,8 @@ classdef CDataFactory < handle
       obj.WhiteIcon.hotspot =[8,8];
       obj.Stop.hotspot =[8,8];
       obj.Start.hotspot=[8,8];
+      obj.Setting.hotspot=[8,8];
+      obj.Label.hotspot=[8,12];
       
     end
     

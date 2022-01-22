@@ -45,6 +45,8 @@ classdef CallbackSet < handle
     AutoForwardCallback(h,e);
     NewBoardCallback(h,e);
     ScanShotCallback(h,e);
+    StopCallback(h,e);
+    LabelCallback(h,e);
     
   end
   
@@ -59,6 +61,8 @@ classdef CallbackSet < handle
     StoneOrderCallback(h,e,option);
     SaveLeelazOptionsCallback(h,e);
     LeelazGameCallback(h,e);
+    AddLabelCallback(h,e);
+    DeleteLabelCallback(h,e);
     
   end
   

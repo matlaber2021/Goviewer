@@ -9,8 +9,8 @@ classdef Stone < handle
     order = 0;      % 落子序号（初始化0）
     comment         char
     move_number     % MN属性
-    note = [];      % 
-    label = '';     % 
+    note = [];      %
+    label = '';     %
   end
   
   properties(Hidden=false,AbortSet,SetObservable)
@@ -19,12 +19,13 @@ classdef Stone < handle
     sClearedStone   % 清子方   UPDATE
     SGFPROPS        %
     SGFPROPVAL      %
+    SGFEXCEPTION    % 无法正常解析的SGF信息
     HasBeenPlayedOnBoard = 0;  % 是否棋盘上摆过
     ShownInTreeNode = 0;
     TreeNode
   end
   
-  methods(Static) 
+  methods(Static)
     function obj = init()
       
       obj = Stone();
@@ -183,7 +184,7 @@ classdef Stone < handle
     end % findLastBranch
     
     function deleteStone(obj)
-      % Delete the Stone and its offspring. 
+      % Delete the Stone and its offspring.
       
       % destory the offspring of object.
       son = findall(obj);
@@ -337,32 +338,6 @@ classdef Stone < handle
       
     end% displaySGFInfo
     
-    %function updateOrderProp(obj)
-    %  % 更新棋子的顺序
-    %  
-    %  if isempty(obj.children)
-    %    return
-    %  end
-    %  
-    %  if isscalar(obj.children)
-    %    obj.children.order=obj.order+1;
-    %    updateOrderProp(obj.children);
-    %    return
-    %  end
-    %  
-    %  for i = 1:length(obj.children)
-    %    if i==1
-    %      obj.children(1).order=obj.order+1;
-    %      updateOrderProp(obj.children(1));
-    %      return
-    %    elseif i>1
-    %      obj.children(i).order=1;
-    %      updateOrderProp(obj.children(i));
-    %    end
-    %  end
-    %  
-    %end
-    
     function refreshOrderProp(obj)
       % 更新棋子的顺序
       
@@ -406,7 +381,7 @@ classdef Stone < handle
     end % refreshOrderProp
     
     function SGFInfoSyncFun(obj,option)
-      % SGFInfo同步函数
+      % SGF information synchronous function
       %
       % option
       % =============
@@ -414,131 +389,36 @@ classdef Stone < handle
       % -1: SGFPROP/SGFPROPVAL => side,position,status,order...
       
       % Update log
-      % 2022/1/10       Add "AE" props. 
+      % 2022/1/10       Add "AE" props.
       % 2022/1/12       Add "N" props.
+      % 2022/1/22       Rearrange the function.
+      
+      o = onCleanup(@() handleInvalidPositionProp(obj) );
       
       if(option==-1)
-        if(~isempty(obj.SGFPROPS))
-          obj.SGFPROPS=strtrim(obj.SGFPROPS); % BUGFIX
-          if(~isempty(obj.SGFPROPVAL))
-            for idx=1:length(obj.SGFPROPS)
-              switch(obj.SGFPROPS{idx})
-                case {'B'}
-                  obj.status=1;
-                  obj.side=1;
-                  obj.position=[upper(obj.SGFPROPVAL{idx}(end-1))-64,...
-                    upper(obj.SGFPROPVAL{idx}(2))-64];
-                case {'W'}
-                  obj.status=1;
-                  obj.side=2;
-                  obj.position=[upper(obj.SGFPROPVAL{idx}(end-1))-64,...
-                    upper(obj.SGFPROPVAL{idx}(2))-64];
-                  
-                % 
-                case {'AE'}
-                  obj.status=2;
-                  obj.side=0;
-                  obj.pClearedStone=[];
-                  P=upper(obj.SGFPROPVAL{idx});
-                  P=regexprep(P,'\s','');
-                  match=regexp(P,'\[\w*?\]','match');
-                  obj.position=[];
-                  for jj=1:length(match)
-                    obj.pClearedStone(end+1,:)=flip(match{jj}(2:end-1)-64);
-                  end
-                  
-                  % 因为不知道清除的落子颜色，用该属性进行存储与恢复
-                  obj.sClearedStone=[];
-                  
-                case {'AB'}
-                  obj.status=2;
-                  obj.side=1;
-                  P=upper(obj.SGFPROPVAL{idx});
-                  P=regexprep(P,'\s','');
-                  match=regexp(P,'\[\w*?\]','match');
-                  obj.position=[];
-                  for jj=1:length(match)
-                    obj.position(end+1,:)=flip(match{jj}(2:end-1)-64);
-                  end
-                case {'AW'}
-                  obj.status=2;
-                  obj.side=2;
-                  P=upper(obj.SGFPROPVAL{idx});
-                  P=regexprep(P,'\s','');
-                  match=regexp(P,'\[\w*?\]','match');
-                  obj.position=[];
-                  for jj=1:length(match)
-                    obj.position(end+1,:)=flip(match{jj}(2:end-1)-64);
-                  end
-                case {'C'}
-                  obj.comment=obj.SGFPROPVAL{idx}(2:end-1);
-                case {'MN'}
-                  obj.move_number=str2double(obj.SGFPROPVAL{idx}(2:end-1));
-                case {'N'}
-                  obj.note=obj.SGFPROPVAL{idx}(2:end-1);
-                case {'LB'}
-                  % LB[nb:A][pb:B]
-                  obj.label = obj.SGFPROPVAL{idx};
-              end
-            end
-            refreshOrderProp(obj); %
-          end
-        end
+        importSGFInfo(obj);
+        reserveSGFException(obj);
       end
       
       if(option==1)
         if(isempty(obj.SGFPROPS))
-          if(isempty(obj.SGFPROPVAL))
-            
-            if(obj.status==1) % moved stone
-              if(obj.side==1)
-                obj.SGFPROPS={'B'};
-                obj.SGFPROPVAL={sprintf('[%s]',char(obj.position(end:-1:1)+64))};
-                obj.SGFPROPVAL=lower(obj.SGFPROPVAL);
-              elseif(obj.side==2)
-                obj.SGFPROPS={'W'};
-                obj.SGFPROPVAL={sprintf('[%s]',char(obj.position(end:-1:1)+64))};
-                obj.SGFPROPVAL=lower(obj.SGFPROPVAL);
-              end
-            elseif(obj.status==2) % added stone
-              if(~isempty(obj.position))
-                if(obj.side==1)
-                  obj.SGFPROPS={'AB'};
-                  format=repmat('[%s]',[1,size(obj.position,1)]);
-                  args=num2cell(obj.position,2);
-                  args=cellfun(@(x)char(x(end:-1:1)+64),args,'UniformOutput',0);
-                  args=lower(args); %BUGFIX
-                  obj.SGFPROPVAL={sprintf(format,args{:})};
-                elseif(obj.side==2)
-                  obj.SGFPROPS={'AW'};
-                  format=repmat('[%s]',[1,size(obj.position,1)]);
-                  args=num2cell(obj.position,2);
-                  args=cellfun(@(x)char(x(end:-1:1)+64),args,'UniformOutput',0);
-                  args=lower(args);
-                  obj.SGFPROPVAL={sprintf(format,args{:})};
-                elseif(obj.side==0) % AE
-                  obj.SGFPROPS={'AE'};
-                  format=repmat('[%s]',[1,size(obj.pClearedStone,1)]);
-                  args=num2cell(obj.pClearedStone,2);
-                  args=lower(args);
-                  args=cellfun(@(x)char(x(end:-1:1)+64),args,'UniformOutput',0);
-                  obj.SGFPROPVAL={sprintf(format,args{:})};
-                end
-              end
-            end
-            
-            if(~isempty(obj.comment))
-              if(ischar(obj.comment))
-                obj.SGFPROPS{end+1}={'C'};
-                obj.SGFPROPVAL{end+1}=sprintf('[%s]',obj.comment);
-              end
-            end
-            
-          end
+          createSGFInfo(obj);
         end
       end
       
-      % BUGFIX
+      if(option==1)
+        if(~isempty(obj.SGFPROPS))
+          updateSGFInfo(obj);
+        end
+      end
+      
+    end % SGFInfoSyncFun
+    
+    function handleInvalidPositionProp(obj)
+      % For historical reason, maybe the pass position for moved stone is
+      % [tt], so it is invalid for the 19x19 board size, so delete the
+      % position property, or exception occured.
+      
       if(~isempty(obj.position))
         for i=1:size(obj.position,1)
           if(obj.position(i,1)>19||obj.position(i,1)<1)
@@ -555,8 +435,336 @@ classdef Stone < handle
           end
         end
       end
+    end % handleInvalidPositionProp
+    
+    function importSGFInfo(obj)
+      % Import SGF file, parse the original SGF infomation to the MATLAB
+      % acceptable property in order to do moves or adds step.
       
-    end % SGFInfoSyncFun
+      if(~isempty(obj.SGFPROPS))
+        obj.SGFPROPS=strtrim(obj.SGFPROPS); % BUGFIX
+        if(~isempty(obj.SGFPROPVAL))
+          for idx=1:length(obj.SGFPROPS)
+            switch(obj.SGFPROPS{idx})
+              case {'B'}
+                obj.status=1;
+                obj.side=1;
+                obj.position=[upper(obj.SGFPROPVAL{idx}(end-1))-64,...
+                  upper(obj.SGFPROPVAL{idx}(2))-64];
+              case {'W'}
+                obj.status=1;
+                obj.side=2;
+                obj.position=[upper(obj.SGFPROPVAL{idx}(end-1))-64,...
+                  upper(obj.SGFPROPVAL{idx}(2))-64];
+                
+              case {'AE'}
+                obj.status=2;
+                obj.side=0;
+                obj.pClearedStone=[];
+                P=upper(obj.SGFPROPVAL{idx});
+                P=regexprep(P,'\s','');
+                match=regexp(P,'\[\w*?\]','match');
+                obj.position=[];
+                for jj=1:length(match)
+                  obj.pClearedStone(end+1,:)=flip(match{jj}(2:end-1)-64);
+                end
+                
+                % We don't know the color of the cleared stone, so set
+                % sClearedStone to save data and restore when triggering
+                % backwardfun function.
+                obj.sClearedStone=[];
+                
+              case {'AB'}
+                obj.status=2;
+                obj.side=1;
+                P=upper(obj.SGFPROPVAL{idx});
+                P=regexprep(P,'\s','');
+                match=regexp(P,'\[\w*?\]','match');
+                obj.position=[];
+                for jj=1:length(match)
+                  obj.position(end+1,:)=flip(match{jj}(2:end-1)-64);
+                end
+              case {'AW'}
+                obj.status=2;
+                obj.side=2;
+                P=upper(obj.SGFPROPVAL{idx});
+                P=regexprep(P,'\s','');
+                match=regexp(P,'\[\w*?\]','match');
+                obj.position=[];
+                for jj=1:length(match)
+                  obj.position(end+1,:)=flip(match{jj}(2:end-1)-64);
+                end
+              case {'C'}
+                obj.comment=obj.SGFPROPVAL{idx}(2:end-1);
+              case {'MN'}
+                obj.move_number=str2double(obj.SGFPROPVAL{idx}(2:end-1));
+              case {'N'}
+                obj.note=obj.SGFPROPVAL{idx}(2:end-1);
+              case {'LB'}
+                % LB[nb:A][pb:B]
+                obj.label = obj.SGFPROPVAL{idx};
+            end
+          end
+          refreshOrderProp(obj); %
+        end
+      end
+    end % importSGFInfo
+    
+    function reserveSGFException(obj)
+      % Reserve the unparsed SGF markers.
+      
+      if(~isempty(obj.SGFPROPS))
+        
+        SGFPROPS=strtrim(obj.SGFPROPS); %#ok
+        [~,p1,p2] = intersect(SGFPROPS,...
+          {'B','W','AE','AB','C','MN','N','LB'},'stable');%#ok
+        data=[obj.SGFPROPS;obj.SGFPROPVAL];
+        data(:,p1)=[];
+        obj.SGFEXCEPTION=[data{:}];
+        
+      end
+      
+    end% reserveSGFException
+    
+    function createSGFInfo(obj)
+      % When the SGFPROPS is empty, build new SGFPROPS and SGFPROPVAL.
+      
+      if(isempty(obj.SGFPROPS))
+        if(isempty(obj.SGFPROPVAL))
+          
+          if(obj.status==1) % moved stone
+            if(obj.side==1)
+              obj.SGFPROPS={'B'};
+              obj.SGFPROPVAL={sprintf('[%s]',char(obj.position(end:-1:1)+64))};
+              obj.SGFPROPVAL=lower(obj.SGFPROPVAL);
+            elseif(obj.side==2)
+              obj.SGFPROPS={'W'};
+              obj.SGFPROPVAL={sprintf('[%s]',char(obj.position(end:-1:1)+64))};
+              obj.SGFPROPVAL=lower(obj.SGFPROPVAL);
+            end
+          elseif(obj.status==2) % added stone
+            if(~isempty(obj.position))
+              if(obj.side==1)
+                obj.SGFPROPS={'AB'};
+                format=repmat('[%s]',[1,size(obj.position,1)]);
+                args=num2cell(obj.position,2);
+                args=cellfun(@(x)char(x(end:-1:1)+64),args,'UniformOutput',0);
+                args=lower(args); %BUGFIX
+                obj.SGFPROPVAL={sprintf(format,args{:})};
+              elseif(obj.side==2)
+                obj.SGFPROPS={'AW'};
+                format=repmat('[%s]',[1,size(obj.position,1)]);
+                args=num2cell(obj.position,2);
+                args=cellfun(@(x)char(x(end:-1:1)+64),args,'UniformOutput',0);
+                args=lower(args);
+                obj.SGFPROPVAL={sprintf(format,args{:})};
+              elseif(obj.side==0) % AE
+                obj.SGFPROPS={'AE'};
+                format=repmat('[%s]',[1,size(obj.pClearedStone,1)]);
+                args=num2cell(obj.pClearedStone,2);
+                args=lower(args);
+                args=cellfun(@(x)char(x(end:-1:1)+64),args,'UniformOutput',0);
+                obj.SGFPROPVAL={sprintf(format,args{:})};
+              end
+            end
+          end
+          
+          if(~isempty(obj.comment))
+            if(ischar(obj.comment))
+              obj.SGFPROPS{end+1}={'C'};
+              obj.SGFPROPVAL{end+1}=sprintf('[%s]',obj.comment);
+            end
+          end
+          
+        end
+      end
+      
+    end % createSGFInfo
+    
+    
+    function updateSGFInfo(obj,bz)
+      % The SGFPROPS exists, if you change the property of Stone, SGFPROPS
+      % and SGFPROPVAL need to make an adjustment.
+      
+      if(nargin<2)
+        bz=[19,19];
+      end
+      
+      if(~isempty(obj.SGFPROPS))
+        if(~isempty(obj.SGFPROPVAL))
+          
+          SGFPROPS = strtrim(obj.SGFPROPS); %#ok
+          
+          % Move Stone
+          if(obj.status==1)
+            if(obj.side==1)
+              pos=strcmp(SGFPROPS,'B'); %#ok
+            elseif(obj.side==2)
+              pos=strcmp(SGFPROPS,'W'); %#ok
+            elseif(obj.side==0)
+              pos=[]; % Nothing to do.
+            end
+            
+            if(any(pos))
+              PROPVAL0=obj.SGFPROPVAL{pos};
+              X=char(obj.Position(2)+96);
+              Y=char(bz(1)+1-obj.Position(1)+96);
+              PROPVAL1=sprintf('[%s%s]',X,Y);
+              if(~isequal(strtrim(PROPVAL0),PROPVAL1))
+                obj.SGFPROPVAL{pos}=PROPVAL1;
+              end
+            end
+            
+            % If not having SGFPROPS, it means that the black stone is
+            % replaced by the white stone, which is not allowed, thus throw
+            % exception.
+            if(~any(pos) && ~isempty(pos))
+              error('Error for updating SGF information on moved stone.');
+            end
+            
+          end
+          
+          % AB
+          if(obj.status==2)
+            if(obj.side==1)
+              pos=strcmp(SGFPROPS,'AB'); %#ok
+              if(any(pos))
+                N=size(obj.position,1);
+                
+                % In AB or AW case, position property must not empty,
+                % otherwise error out.
+                if(N==0)
+                  error('In AB/AW case, position is empty.');
+                end
+                
+                PROPVAL0=obj.SGFPROPVAL{pos};
+                PROPVAL1='';
+                for idx=1:N
+                  X=char(obj.Position(2,idx)+96);
+                  Y=char(bz(1)+1-obj.Position(1,idx)+96);
+                  temp=sprintf('[%s%s]',X,Y);
+                  PROPVAL1=[PROPVAL1, temp]; %#ok
+                end
+                
+                % Maybe the position dont change but order changed, still
+                % be considered as modification.
+                if(~isequal(PROPVAL0,PROPVAL1))
+                  obj.SGFPROPVAL{pos}=PROPVAL1;
+                end
+                
+              end
+            end
+          end
+          
+          % AW
+          if(obj.status==2)
+            if(obj.side==2)
+              pos=strcmp(SGFPROPS,'AW'); %#ok
+              if(any(pos))
+                N=size(obj.position,1);
+                
+                % In AB or AW case, position property must not empty,
+                % otherwise error out.
+                if(N==0)
+                  error('In AB/AW case, position is empty.');
+                end
+                
+                PROPVAL0=obj.SGFPROPVAL{pos};
+                PROPVAL1='';
+                for idx=1:N
+                  X=char(obj.Position(2,idx)+96);
+                  Y=char(bz(1)+1-obj.Position(1,idx)+96);
+                  temp=sprintf('[%s%s]',X,Y);
+                  PROPVAL1=[PROPVAL1, temp]; %#ok
+                end
+                
+                % Maybe the position dont change but order changed, still
+                % be considered as modification.
+                if(~isequal(PROPVAL0,PROPVAL1))
+                  obj.SGFPROPVAL{pos}=PROPVAL1;
+                end
+                
+              end
+            end
+          end
+          
+          % AE
+          if(obj.status==2)
+            if(obj.side==0)
+              pos=strcmp(SGFPROPS,'AE'); %#ok
+              if(any(pos))
+                N=size(obj.position,1);
+                
+                PROPVAL0=obj.SGFPROPVAL{pos};
+                PROPVAL1='';
+                for idx=1:N
+                  X=char(obj.Position(2,idx)+96);
+                  Y=char(bz(1)+1-obj.Position(1,idx)+96);
+                  temp=sprintf('[%s%s]',X,Y);
+                  PROPVAL1=[PROPVAL1, temp]; %#ok
+                end
+                
+                % For AE stone, maybe there is no stones to be cleared, so
+                % the default PROPVAL is [].
+                if(~isempty(PROPVAL1))
+                  PROPVAL1='[]';
+                end
+                
+                if(~isequal(PROPVAL0,PROPVAL1))
+                  obj.SGFPROPVAL{pos}=PROPVAL1;
+                end
+                
+              end
+            end
+          end
+          
+          %%% General PROPS %%%
+          
+          % Move Number
+          PROPVAL1=sprintf('[%d]',obj.move_number);
+          pos=strcmp(SGFPROPS,'MN'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROP{end+1}='MN';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % Comment
+          PROPVAL1=sprintf('[%s]',obj.comment);
+          pos=strcmp(SGFPROPS,'C'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROP{end+1}='C';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % Note
+          PROPVAL1=sprintf('[%s]',obj.note);
+          pos=strcmp(SGFPROPS,'N'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROP{end+1}='N';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % Label: Because label has multi bracket groups, so the label
+          % property is exactly the PROPVAL for LB.
+          PROPVAL1=deal(obj.label);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROP{end+1}='LB';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+        end
+      end
+      
+    end % updateSGFInfo
     
     function [p,nth] = getParent(obj)
       % Find the parent object and also find-out the nth children of it.

@@ -118,82 +118,98 @@ classdef GoViewer < handle
       hTBar1 = uitoolbar(fig);
       hTBar2 = uitoolbar(fig);
       
-      hButton_File=uipushtool(hTBar1,'CData',CData2RGB(obj.File.cdata) );
-      set(hButton_File,'ClickedCallback',@CallbackSet.FileImportCallback);
-      set(hButton_File,'Tooltip','open');
+      hBtn_File=uipushtool(hTBar1,'CData',CData2RGB(obj.File.cdata) );
+      set(hBtn_File,'ClickedCallback',@CallbackSet.FileImportCallback);
+      set(hBtn_File,'Tooltip','open');
       
-      hButton_Save=uipushtool(hTBar1,'CData',CData2RGB(obj.Save.cdata) );
-      set(hButton_Save,'ClickedCallback',@CallbackSet.SaveFileCallback);
-      set(hButton_Save,'Tooltip','save');
+      hBtn_Save=uipushtool(hTBar1,'CData',CData2RGB(obj.Save.cdata) );
+      set(hBtn_Save,'ClickedCallback',@CallbackSet.SaveFileCallback);
+      set(hBtn_Save,'Tooltip','save');
       
-      hButton_New=uipushtool(hTBar1,'CData',CData2RGB(obj.GoGame.cdata) );
-      set(hButton_New,'ClickedCallback',@CallbackSet.NewBoardCallback);
-      set(hButton_New,'Tooltip','new board');
+      hBtn_New=uipushtool(hTBar1,'CData',CData2RGB(obj.GoGame.cdata) );
+      set(hBtn_New,'ClickedCallback',@CallbackSet.NewBoardCallback);
+      set(hBtn_New,'Tooltip','new board');
       
-      hButton_BMove = uitoggletool(hTBar1,'CData',CData2RGB(obj.Black.cdata) );
-      set(hButton_BMove,'ClickedCallback',@CallbackSet.BlackModeCallback);
-      set(hButton_BMove,'Tooltip','black add');
+      hBtn_BMove = uitoggletool(hTBar1,'CData',CData2RGB(obj.Black.cdata) );
+      set(hBtn_BMove,'ClickedCallback',@CallbackSet.BlackModeCallback);
+      set(hBtn_BMove,'Tooltip','black add');
       
-      hButton_WMove = uitoggletool(hTBar1,'CData',CData2RGB(obj.White.cdata) );
-      set(hButton_WMove,'ClickedCallback',@CallbackSet.WhiteModeCallback);
-      set(hButton_WMove,'Tooltip','white add');
+      hBtn_WMove = uitoggletool(hTBar1,'CData',CData2RGB(obj.White.cdata) );
+      set(hBtn_WMove,'ClickedCallback',@CallbackSet.WhiteModeCallback);
+      set(hBtn_WMove,'Tooltip','white add');
       
-      hButton_Turn  = uipushtool(hTBar1,'CData',CData2RGB(obj.ByTurn.cdata) );
-      set(hButton_Turn,'ClickedCallback',@CallbackSet.DefaultModeCallback);
-      set(hButton_Turn,'Tooltip','default move');
+      hBtn_Turn  = uipushtool(hTBar1,'CData',CData2RGB(obj.ByTurn.cdata) );
+      set(hBtn_Turn,'ClickedCallback',@CallbackSet.DefaultModeCallback);
+      set(hBtn_Turn,'Tooltip','default move');
       
-      hButton_BPass = uipushtool  (hTBar1,'CData',CData2RGB(obj.BPass.cdata) );
-      set(hButton_BPass,'ClickedCallback',@CallbackSet.BlackPassCallback);
-      set(hButton_BPass,'Tooltip','black pass');
+      hBtn_BPass = uipushtool  (hTBar1,'CData',CData2RGB(obj.BPass.cdata) );
+      set(hBtn_BPass,'ClickedCallback',@CallbackSet.BlackPassCallback);
+      set(hBtn_BPass,'Tooltip','black pass');
       
-      hButton_WPass = uipushtool  (hTBar1,'CData',CData2RGB(obj.WPass.cdata) );
-      set(hButton_WPass,'ClickedCallback',@CallbackSet.WhitePassCallback);
-      set(hButton_WPass,'Tooltip','white pass');
+      hBtn_WPass = uipushtool  (hTBar1,'CData',CData2RGB(obj.WPass.cdata) );
+      set(hBtn_WPass,'ClickedCallback',@CallbackSet.WhitePassCallback);
+      set(hBtn_WPass,'Tooltip','white pass');
       
-      hButton_Delete = uipushtool (hTBar1,'CData',CData2RGB(obj.Delete.cdata, [1,0,0]) );
-      set(hButton_Delete,'ClickedCallback',@CallbackSet.RetractStoneCallback );
-      set(hButton_Delete,'Tooltip','delete');
+      hBtn_Delete = uipushtool (hTBar1,'CData',CData2RGB(obj.Delete.cdata, [1,0,0]) );
+      set(hBtn_Delete,'ClickedCallback',@CallbackSet.RetractStoneCallback );
+      set(hBtn_Delete,'Tooltip','delete');
       
-      hButton_Resign = uipushtool (hTBar1,'CData',CData2RGB(obj.Resign.cdata) );
-      set(hButton_Resign,'ClickedCallback',@CallbackSet.ResignCallback );
-      set(hButton_Resign,'Tooltip','resign');
-      set(hButton_Resign,'Enable','off');
+      hBtn_Resign = uipushtool (hTBar1,'CData',CData2RGB(obj.Resign.cdata) );
+      set(hBtn_Resign,'ClickedCallback',@CallbackSet.ResignCallback );
+      set(hBtn_Resign,'Tooltip','resign');
+      set(hBtn_Resign,'Enable','off');
       
-      hButton_Rotate = uipushtool(hTBar2,'CData',CData2RGB(obj.Rotate.cdata) );
-      set(hButton_Rotate,'ClickedCallback',@CallbackSet.RotateCallback)
-      set(hButton_Rotate,'Tooltip','rotate');
+      hBtn_Option = uipushtool(hTBar2,'CData',CData2RGB(obj.Setting.cdata) );
+      set(hBtn_Option,'ClickedCallback',[])
+      set(hBtn_Option,'Tooltip','option');      
       
-      hButton_Order = uipushtool(hTBar2,'CData',CData2RGB(obj.One.cdata) );
-      set(hButton_Order,'ClickedCallback',@CallbackSet.SwitchOrderCallback);
-      set(hButton_Order,'Tooltip','stone number');
+      hBtn_Rotate = uipushtool(hTBar2,'CData',CData2RGB(obj.Rotate.cdata) );
+      set(hBtn_Rotate,'ClickedCallback',@CallbackSet.RotateCallback)
+      set(hBtn_Rotate,'Tooltip','rotate');
       
-      hButton_Back = uipushtool(hTBar2,'CData',CData2RGB(obj.Back.cdata) );
-      set(hButton_Back,'ClickedCallback',@CallbackSet.BackwardCallback);
-      set(hButton_Back,'Tooltip','backward');
+      hBtn_Order = uipushtool(hTBar2,'CData',CData2RGB(obj.One.cdata) );
+      set(hBtn_Order,'ClickedCallback',@CallbackSet.SwitchOrderCallback);
+      set(hBtn_Order,'Tooltip','stone number');
       
-      hButton_Forward = uipushtool(hTBar2,'CData',CData2RGB(obj.Forward.cdata) );
-      set(hButton_Forward,'ClickedCallback',@CallbackSet.ForwardCallback);
-      set(hButton_Forward,'Tooltip','forward');
+      hBtn_Start = uipushtool(hTBar2,'CData',CData2RGB(obj.Start.cdata) );
+      set(hBtn_Start,'ClickedCallback',@CallbackSet.StartCallback);
+      set(hBtn_Start,'Tooltip','start');
       
-      hButton_Bot = uipushtool(hTBar2,'CData',CData2RGB(obj.Bot.cdata) );
-      set(hButton_Bot,'ClickedCallback',@CallbackSet.LeelazGameCallback);
-      set(hButton_Bot,'Tooltip','leela zero');
+      hBtn_Back = uipushtool(hTBar2,'CData',CData2RGB(obj.Back.cdata) );
+      set(hBtn_Back,'ClickedCallback',@CallbackSet.BackwardCallback);
+      set(hBtn_Back,'Tooltip','backward');
       
-      hButton_Auto = uitoggletool(hTBar2,'CData',CData2RGB(obj.HandTalk.cdata) );
-      set(hButton_Auto,'ClickedCallback',@CallbackSet.AutoForwardCallback);
-      set(hButton_Auto,'Tooltip','auto forward');
+      hBtn_Forward = uipushtool(hTBar2,'CData',CData2RGB(obj.Forward.cdata) );
+      set(hBtn_Forward,'ClickedCallback',@CallbackSet.ForwardCallback);
+      set(hBtn_Forward,'Tooltip','forward');
+
+      hBtn_Stop = uipushtool(hTBar2,'CData',CData2RGB(obj.Stop.cdata) );
+      set(hBtn_Stop,'ClickedCallback',@CallbackSet.StopCallback);
+      set(hBtn_Stop,'Tooltip','stop');
       
-      hButton_Shot = uipushtool(hTBar2,'CData',CData2RGB(obj.ScanShot.cdata) );
-      set(hButton_Shot,'ClickedCallback',@CallbackSet.ScanShotCallback);
-      set(hButton_Shot,'Tooltip','scanshot');
+      hBtn_Bot = uipushtool(hTBar2,'CData',CData2RGB(obj.Bot.cdata) );
+      set(hBtn_Bot,'ClickedCallback',@CallbackSet.LeelazGameCallback);
+      set(hBtn_Bot,'Tooltip','leela zero');
       
-      hButton_Comment = uipushtool(hTBar2,'CData',CData2RGB(obj.Comment.cdata) );
-      set(hButton_Comment,'ClickedCallback',@CallbackSet.CommentCallback);
-      set(hButton_Comment,'Tooltip','comment');
+      hBtn_Auto = uitoggletool(hTBar2,'CData',CData2RGB(obj.HandTalk.cdata) );
+      set(hBtn_Auto,'ClickedCallback',@CallbackSet.AutoForwardCallback);
+      set(hBtn_Auto,'Tooltip','auto forward');
       
-      hButton_Tree = uipushtool(hTBar2,'CData',CData2RGB(obj.Tree.cdata) );
-      set(hButton_Tree,'ClickedCallback',@CallbackSet.TreeNodeCallback);
-      set(hButton_Tree,'Tooltip','tree node');
+      hBtn_Shot = uipushtool(hTBar2,'CData',CData2RGB(obj.ScanShot.cdata) );
+      set(hBtn_Shot,'ClickedCallback',@CallbackSet.ScanShotCallback);
+      set(hBtn_Shot,'Tooltip','scanshot');
+      
+      hBtn_Comment = uipushtool(hTBar2,'CData',CData2RGB(obj.Comment.cdata) );
+      set(hBtn_Comment,'ClickedCallback',@CallbackSet.CommentCallback);
+      set(hBtn_Comment,'Tooltip','comment');
+      
+      hBtn_Tree = uipushtool(hTBar2,'CData',CData2RGB(obj.Tree.cdata) );
+      set(hBtn_Tree,'ClickedCallback',@CallbackSet.TreeNodeCallback);
+      set(hBtn_Tree,'Tooltip','tree node');
+      
+      hBtn_Label = uitoggletool(hTBar2,'CData',CData2RGB(obj.Label.cdata) );
+      set(hBtn_Label,'ClickedCallback',[]);
+      set(hBtn_Label,'Tooltip','label');
       
     end
     
@@ -460,8 +476,10 @@ classdef GoViewer < handle
       tree.UserData=stone;
       tree.Position=[16,16,290-32,240-32];
       tree.BackgroundColor=[0.94 0.94 0.94];
+      tree.Editable='on';
       tree.SelectionChangedFcn=@CallbackSet.StoneNodeSelectedCallback;
       tree.NodeExpandedFcn=@CallbackSet.StoneNodeExpandCallback;
+      tree.NodeTextChangedFcn=@CallbackSet.EditNodeNameCallback;
       NodeExpandLocalFun(tree,1);
       tree.SelectedNodes=tree.Children(1);
       Manager.WINDOW.TREE_WINDOW=ufig;

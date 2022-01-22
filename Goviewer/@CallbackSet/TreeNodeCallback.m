@@ -14,5 +14,5 @@ if(Manager.CONFIG.SHOW_TREE)
 elseif(~Manager.CONFIG.SHOW_TREE)
   Manager.CONFIG.SHOW_TREE=1;
   GoViewer.CreateTreeWindow(fig);
-  
+  updateStoneNode(fig);
 end
