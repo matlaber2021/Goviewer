@@ -7,10 +7,24 @@ classdef Stone < handle
     side = [];      % 落子方
     position = [];  % 落子位置
     order = 0;      % 落子序号（初始化0）
+  end
+    
+  properties
     comment         char
     move_number     % MN属性
     note = [];      %
     label = '';     %
+    dim
+    view
+    triangle
+    circle
+    selected
+    mark
+    square
+    arrow
+    line
+    territory_black
+    territory_white
   end
   
   properties(Hidden=false,AbortSet,SetObservable)
@@ -267,22 +281,6 @@ classdef Stone < handle
       
     end% findNextStone
     
-    % % 如果找到第i个直系，则定义下一棋子对象是分支
-    % % 的第i+1个children
-    % for i = 1:num
-    %  comp=branch.children(i);
-    %  ok = isDirectLine(obj,comp);
-    %  if ok==1
-    %    if(i==num)
-    %      newstone=[];
-    %      return
-    %    elseif(i<num)
-    %      newstone=branch.children(i+1);
-    %      return
-    %    end
-    %  end
-    %end
-    
     function h = findall(obj)
       % 找到所有子节点（不包括本身）
       
@@ -449,24 +447,30 @@ classdef Stone < handle
               case {'B'}
                 obj.status=1;
                 obj.side=1;
-                obj.position=[upper(obj.SGFPROPVAL{idx}(end-1))-64,...
-                  upper(obj.SGFPROPVAL{idx}(2))-64];
+                obj.position=lower(obj.SGFPROPVAL{idx}(end-1:-1:2))-96;
               case {'W'}
                 obj.status=1;
                 obj.side=2;
-                obj.position=[upper(obj.SGFPROPVAL{idx}(end-1))-64,...
-                  upper(obj.SGFPROPVAL{idx}(2))-64];
+                obj.position=lower(obj.SGFPROPVAL{idx}(end-1:-1:2))-96;
                 
               case {'AE'}
                 obj.status=2;
                 obj.side=0;
                 obj.pClearedStone=[];
-                P=upper(obj.SGFPROPVAL{idx});
+                P=lower(obj.SGFPROPVAL{idx});
                 P=regexprep(P,'\s','');
-                match=regexp(P,'\[\w*?\]','match');
+                match=regexp(P,'\[[\w|:]*?\]','match');
                 obj.position=[];
                 for jj=1:length(match)
-                  obj.pClearedStone(end+1,:)=flip(match{jj}(2:end-1)-64);
+                  if(~contains(match{jj},':'))
+                    obj.pClearedStone(end+1,:)=match{jj}(end-1:-1:2)-96;
+                  else
+                    for k=(match{jj}(2)-96):(match{jj}(5)-96)
+                      for l=(match{jj}(3)-96):(match{jj}(6)-96)
+                        obj.pClearedStone(end+1,:)=[l,k];
+                      end
+                    end
+                  end
                 end
                 
                 % We don't know the color of the cleared stone, so set
@@ -477,22 +481,38 @@ classdef Stone < handle
               case {'AB'}
                 obj.status=2;
                 obj.side=1;
-                P=upper(obj.SGFPROPVAL{idx});
+                P=lower(obj.SGFPROPVAL{idx});
                 P=regexprep(P,'\s','');
-                match=regexp(P,'\[\w*?\]','match');
+                match=regexp(P,'\[[\w|:]*?\]','match');
                 obj.position=[];
                 for jj=1:length(match)
-                  obj.position(end+1,:)=flip(match{jj}(2:end-1)-64);
+                  if(~contains(match{jj},':'))
+                    obj.position(end+1,:)=match{jj}(end-1:-1:2)-96;
+                  else
+                    for k=(match{jj}(2)-96):(match{jj}(5)-96)
+                      for l=(match{jj}(3)-96):(match{jj}(6)-96)
+                        obj.position(end+1,:)=[l,k];
+                      end
+                    end
+                  end
                 end
               case {'AW'}
                 obj.status=2;
                 obj.side=2;
-                P=upper(obj.SGFPROPVAL{idx});
+                P=lower(obj.SGFPROPVAL{idx});
                 P=regexprep(P,'\s','');
-                match=regexp(P,'\[\w*?\]','match');
+                match=regexp(P,'\[[\w|:]*?\]','match');
                 obj.position=[];
                 for jj=1:length(match)
-                  obj.position(end+1,:)=flip(match{jj}(2:end-1)-64);
+                  if(~contains(match{jj},':'))
+                    obj.position(end+1,:)=match{jj}(end-1:-1:2)-96;
+                  else
+                    for k=(match{jj}(2)-96):(match{jj}(5)-96)
+                      for l=(match{jj}(3)-96):(match{jj}(6)-96)
+                        obj.position(end+1,:)=[l,k];
+                      end
+                    end
+                  end
                 end
               case {'C'}
                 obj.comment=obj.SGFPROPVAL{idx}(2:end-1);
@@ -503,6 +523,26 @@ classdef Stone < handle
               case {'LB'}
                 % LB[nb:A][pb:B]
                 obj.label = obj.SGFPROPVAL{idx};
+              case {'DD'}
+                obj.dim = obj.SGFPROPVAL{idx};
+              case {'TR'}
+                obj.triangle = obj.SGFPROPVAL{idx};
+              case {'CR'}
+                obj.circle = obj.SGFPROPVAL{idx};
+              case {'SQ'}
+                obj.square = obj.SGFPROPVAL{idx};
+              case {'SL'}
+                obj.selected = obj.SGFPROPVAL{idx};
+              case {'MA'}
+                obj.mark = obj.SGFPROPVAL{idx};
+              case {'AR'}
+                obj.arrow = obj.SGFPROPVAL{idx};
+              case {'LN'}
+                obj.line = obj.SGFPROPVAL{idx};
+              case {'TB'}
+                obj.territory_black = obj.SGFPROPVAL{idx};
+              case {'TW'}
+                obj.territory_white = obj.SGFPROPVAL{idx};
             end
           end
           refreshOrderProp(obj); %
@@ -517,7 +557,8 @@ classdef Stone < handle
         
         SGFPROPS=strtrim(obj.SGFPROPS); %#ok
         [~,p1,p2] = intersect(SGFPROPS,...
-          {'B','W','AE','AB','C','MN','N','LB'},'stable');%#ok
+          {'B','W','AE','AB','C','MN','N','LB','DD',...
+          'TR','CR','SQ','SL','MA','AR','LN','TW','TB'},'stable');%#ok
         data=[obj.SGFPROPS;obj.SGFPROPVAL];
         data(:,p1)=[];
         obj.SGFEXCEPTION=[data{:}];
@@ -529,17 +570,18 @@ classdef Stone < handle
     function createSGFInfo(obj)
       % When the SGFPROPS is empty, build new SGFPROPS and SGFPROPVAL.
       
+      o = onCleanup(@() cleanupSGFInfo(obj));
       if(isempty(obj.SGFPROPS))
         if(isempty(obj.SGFPROPVAL))
           
           if(obj.status==1) % moved stone
             if(obj.side==1)
               obj.SGFPROPS={'B'};
-              obj.SGFPROPVAL={sprintf('[%s]',char(obj.position(end:-1:1)+64))};
+              obj.SGFPROPVAL={sprintf('[%s]',char(obj.position(2:-1:1)+96))};
               obj.SGFPROPVAL=lower(obj.SGFPROPVAL);
             elseif(obj.side==2)
               obj.SGFPROPS={'W'};
-              obj.SGFPROPVAL={sprintf('[%s]',char(obj.position(end:-1:1)+64))};
+              obj.SGFPROPVAL={sprintf('[%s]',char(obj.position(2:-1:1)+96))};
               obj.SGFPROPVAL=lower(obj.SGFPROPVAL);
             end
           elseif(obj.status==2) % added stone
@@ -548,22 +590,22 @@ classdef Stone < handle
                 obj.SGFPROPS={'AB'};
                 format=repmat('[%s]',[1,size(obj.position,1)]);
                 args=num2cell(obj.position,2);
-                args=cellfun(@(x)char(x(end:-1:1)+64),args,'UniformOutput',0);
-                args=lower(args); %BUGFIX
+                args=cellfun(@(x)char(x(2:-1:1)+96),args,'UniformOutput',0);
+                %args=lower(args); %BUGFIX
                 obj.SGFPROPVAL={sprintf(format,args{:})};
               elseif(obj.side==2)
                 obj.SGFPROPS={'AW'};
                 format=repmat('[%s]',[1,size(obj.position,1)]);
                 args=num2cell(obj.position,2);
-                args=cellfun(@(x)char(x(end:-1:1)+64),args,'UniformOutput',0);
-                args=lower(args);
+                args=cellfun(@(x)char(x(2:-1:1)+96),args,'UniformOutput',0);
+                %args=lower(args);
                 obj.SGFPROPVAL={sprintf(format,args{:})};
               elseif(obj.side==0) % AE
                 obj.SGFPROPS={'AE'};
                 format=repmat('[%s]',[1,size(obj.pClearedStone,1)]);
                 args=num2cell(obj.pClearedStone,2);
-                args=lower(args);
-                args=cellfun(@(x)char(x(end:-1:1)+64),args,'UniformOutput',0);
+                %args=lower(args);
+                args=cellfun(@(x)char(x(2:-1:1)+96),args,'UniformOutput',0);
                 obj.SGFPROPVAL={sprintf(format,args{:})};
               end
             end
@@ -582,14 +624,11 @@ classdef Stone < handle
     end % createSGFInfo
     
     
-    function updateSGFInfo(obj,bz)
+    function updateSGFInfo(obj)
       % The SGFPROPS exists, if you change the property of Stone, SGFPROPS
       % and SGFPROPVAL need to make an adjustment.
       
-      if(nargin<2)
-        bz=[19,19];
-      end
-      
+      o = onCleanup(@() cleanupSGFInfo(obj));
       if(~isempty(obj.SGFPROPS))
         if(~isempty(obj.SGFPROPVAL))
           
@@ -607,8 +646,8 @@ classdef Stone < handle
             
             if(any(pos))
               PROPVAL0=obj.SGFPROPVAL{pos};
-              X=char(obj.Position(2)+96);
-              Y=char(bz(1)+1-obj.Position(1)+96);
+              X=char(obj.position(2)+96);
+              Y=char(obj.position(1)+96);
               PROPVAL1=sprintf('[%s%s]',X,Y);
               if(~isequal(strtrim(PROPVAL0),PROPVAL1))
                 obj.SGFPROPVAL{pos}=PROPVAL1;
@@ -640,8 +679,8 @@ classdef Stone < handle
                 PROPVAL0=obj.SGFPROPVAL{pos};
                 PROPVAL1='';
                 for idx=1:N
-                  X=char(obj.Position(2,idx)+96);
-                  Y=char(bz(1)+1-obj.Position(1,idx)+96);
+                  X=char(obj.position(idx,2)+96);
+                  Y=char(obj.position(idx,1)+96);
                   temp=sprintf('[%s%s]',X,Y);
                   PROPVAL1=[PROPVAL1, temp]; %#ok
                 end
@@ -672,8 +711,8 @@ classdef Stone < handle
                 PROPVAL0=obj.SGFPROPVAL{pos};
                 PROPVAL1='';
                 for idx=1:N
-                  X=char(obj.Position(2,idx)+96);
-                  Y=char(bz(1)+1-obj.Position(1,idx)+96);
+                  X=char(obj.position(idx,2)+96);
+                  Y=char(obj.position(idx,1)+96);
                   temp=sprintf('[%s%s]',X,Y);
                   PROPVAL1=[PROPVAL1, temp]; %#ok
                 end
@@ -698,8 +737,8 @@ classdef Stone < handle
                 PROPVAL0=obj.SGFPROPVAL{pos};
                 PROPVAL1='';
                 for idx=1:N
-                  X=char(obj.Position(2,idx)+96);
-                  Y=char(bz(1)+1-obj.Position(1,idx)+96);
+                  X=char(obj.position(idx,2)+96);
+                  Y=char(obj.position(idx,1)+96);
                   temp=sprintf('[%s%s]',X,Y);
                   PROPVAL1=[PROPVAL1, temp]; %#ok
                 end
@@ -726,7 +765,7 @@ classdef Stone < handle
           if(any(pos))
             obj.SGFPROPVAL{pos}=PROPVAL1;
           elseif(~any(pos))
-            obj.SGFPROP{end+1}='MN';
+            obj.SGFPROPS{end+1}='MN';
             obj.SGFPROPVAL{end+1}=PROPVAL1;
           end
           
@@ -736,7 +775,7 @@ classdef Stone < handle
           if(any(pos))
             obj.SGFPROPVAL{pos}=PROPVAL1;
           elseif(~any(pos))
-            obj.SGFPROP{end+1}='C';
+            obj.SGFPROPS{end+1}='C';
             obj.SGFPROPVAL{end+1}=PROPVAL1;
           end
           
@@ -746,18 +785,140 @@ classdef Stone < handle
           if(any(pos))
             obj.SGFPROPVAL{pos}=PROPVAL1;
           elseif(~any(pos))
-            obj.SGFPROP{end+1}='N';
+            obj.SGFPROPS{end+1}='N';
             obj.SGFPROPVAL{end+1}=PROPVAL1;
           end
           
-          % Label: Because label has multi bracket groups, so the label
+          % Label: Because label has multi bracket pairs, so the label
           % property is exactly the PROPVAL for LB.
           PROPVAL1=deal(obj.label);
           if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'LB'); %#ok
           if(any(pos))
             obj.SGFPROPVAL{pos}=PROPVAL1;
           elseif(~any(pos))
-            obj.SGFPROP{end+1}='LB';
+            obj.SGFPROPS{end+1}='LB';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % Dim
+          PROPVAL1=deal(obj.dim);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'DD'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='DD';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % triangle
+          PROPVAL1=deal(obj.triangle);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'TR'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='TR';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % circle
+          PROPVAL1=deal(obj.circle);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'CR'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='CR';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % square
+          PROPVAL1=deal(obj.square);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'SQ'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='SQ';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % selected points
+          PROPVAL1=deal(obj.selected);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'SL'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='SL';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % triangle
+          PROPVAL1=deal(obj.triangle);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'TR'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='TR';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % MARK
+          PROPVAL1=deal(obj.mark);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'MA'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='MA';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % ARROW
+          PROPVAL1=deal(obj.arrow);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'AR'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='AR';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+          
+          % Line
+          PROPVAL1=deal(obj.line);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'LN'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='LN';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+
+          % Black territory
+          PROPVAL1=deal(obj.line);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'TB'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='TB';
+            obj.SGFPROPVAL{end+1}=PROPVAL1;
+          end
+
+          % White territory
+          PROPVAL1=deal(obj.line);
+          if(isempty(PROPVAL1)), PROPVAL1='[]'; end
+          pos=strcmp(SGFPROPS,'TW'); %#ok
+          if(any(pos))
+            obj.SGFPROPVAL{pos}=PROPVAL1;
+          elseif(~any(pos))
+            obj.SGFPROPS{end+1}='TW';
             obj.SGFPROPVAL{end+1}=PROPVAL1;
           end
           
@@ -765,6 +926,49 @@ classdef Stone < handle
       end
       
     end % updateSGFInfo
+    
+    function cleanupSGFInfo(obj)
+      % Clean up the SGF infomation
+      
+      if(~isempty(obj.SGFPROPS))
+        N=numel(obj.SGFPROPS);
+        for idx=N:-1:1
+          switch strtrim(obj.SGFPROPS{idx})
+            case {'B','W'}
+              % [] means pass, can not remove
+            case {'AB','AW','AE'}
+              PROPVAL=regexprep(obj.SGFPROPVAL{idx},'\s','');
+              if(isequal(PROPVAL,'[]'))
+                obj.SGFPROPS(idx)=[];
+                obj.SGFPROPVAL(idx)=[];
+              end
+            case {'LB','MN','TR','CR','SQ','SL','MA','TB','TW',...
+                'DD','VW','AR','LN'}
+              PROPVAL=regexprep(obj.SGFPROPVAL{idx},'\s','');
+              if(isequal(PROPVAL,'[]'))
+                obj.SGFPROPS(idx)=[];
+                obj.SGFPROPVAL(idx)=[];
+              end
+              % In the note and comment symbol, leaving a blank space can
+              % also work, so deleting the space outside the bracket pair.
+            case {'C','N'}
+              PROPVAL=strtrim(obj.SGFPROPVAL{idx});
+              if(isequal(PROPVAL,'[]'))
+                obj.SGFPROPS(idx)=[];
+                obj.SGFPROPVAL(idx)=[];
+              end
+            otherwise
+              PROPVAL=regexprep(obj.SGFPROPVAL{idx},'\s','');
+              if(isequal(PROPVAL,'[]'))
+                obj.SGFPROPS(idx)=[];
+                obj.SGFPROPVAL(idx)=[];
+              end
+          end
+        end
+        
+      end
+      
+    end% cleanupSGFInfo
     
     function [p,nth] = getParent(obj)
       % Find the parent object and also find-out the nth children of it.
@@ -844,6 +1048,7 @@ classdef Stone < handle
       % N[]
       
       obj=findAncestor(obj);
+      o=onCleanup(@() cleanupSGFInfo(obj.children(1)));
       if(~isempty(obj))
         obj.children(1).SGFPROPS={'CA','AP','SZ','PB','PW','RE','KM','C','N'};
         obj.children(1).SGFPROPVAL={'[utf8]','[Goviewer]','[19]','[]',...

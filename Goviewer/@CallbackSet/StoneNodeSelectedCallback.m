@@ -16,7 +16,8 @@ o1 = onCleanup(@() CallbackSet.CommentSyncCallback(fig,[]) );
 o2 = onCleanup(@() UpdateStoneMarker(fig) );
 o3 = onCleanup(@() UpdateStoneOrder(fig) );
 o4 = onCleanup(@() ShowChildNodePath(fig));
-o5 = onCleanup(@() updateStoneLabels(fig));
+o5 = onCleanup(@() updateStoneMarkup(fig));
+% o6 = onCleanup(@() checkDim(fig) );
 
 stone1=node.NodeData;
 route=getStoneRoute(stone0,stone1);

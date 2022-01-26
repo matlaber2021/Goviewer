@@ -9,8 +9,8 @@ hstone=findobj(fig,'tag','stone');
 marker=findobj(fig,'tag','marker');
 path=findobj(fig,'tag','path');
 label=findobj(fig,'tag','label');
-board=findobj(fig,'tag','axes');
-cross=findobj(fig,'tag','grid');
+board=findobj(fig,'type','axes');
+cross=findobj(fig,'type','line');
 
 if(strcmp(h.State,'on'))
   set(star,'ButtonDownFcn',@CallbackSet.AddLabelCallback);

@@ -132,17 +132,22 @@ out.stone1=stone1;
           pToMove = stone1.position;
           pToBeRemoved = stone1.pRemovedStone;
           
-          for i=1:size(pToMove,1)
-            x=pToMove(i,1);
-            y=pToMove(i,2);
-            state1(x,y)=stone1.side;
+          if(~isempty(pToMove))
+            for i=1:size(pToMove,1)
+              x=pToMove(i,1);
+              y=pToMove(i,2);
+              state1(x,y)=stone1.side;
+            end
           end
           
-          for i=1:size(pToBeRemoved)
-            x=pToBeRemoved(i,1);
-            y=pToBeRemoved(i,2);
-            state1(x,y)=0;
+          if(~isempty(pToBeRemoved))
+            for i=1:size(pToBeRemoved)
+              x=pToBeRemoved(i,1);
+              y=pToBeRemoved(i,2);
+              state1(x,y)=0;
+            end
           end
+          
         end
       end
     end

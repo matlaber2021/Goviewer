@@ -505,8 +505,7 @@ classdef GoViewer < handle
     
     function enableJavaFigureInteractivity(fig)
       % Get the undocumented java figure component object
-      % WARN: The undocumented JavaFrame property will be removed, and it
-      % is not safe to handle exposed-JAVA object directly.
+      % WARN: The undocumented JavaFrame property 
       
       msg1='MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame';
       msg2='MATLAB:ui:javaframe:PropertyToBeRemoved';

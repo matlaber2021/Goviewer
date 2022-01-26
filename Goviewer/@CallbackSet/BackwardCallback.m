@@ -15,8 +15,9 @@ o1 = onCleanup(@() CallbackSet.CommentSyncCallback(h,e) );
 o2 = onCleanup(@() UpdateStoneMarker(h) );
 o3 = onCleanup(@() UpdateStoneOrder(h) );
 o4 = onCleanup(@() ShowChildNodePath(h));
-o5 = onCleanup(@() updateStoneLabels(h) );
+o5 = onCleanup(@() updateStoneMarkup(h) );
 o6 = onCleanup(@() updateStoneNode(fig) );
+% o7 = onCleanup(@() checkDim(fig) );
 
 state0=Manager.DATA.CURRENT_STATE;
 

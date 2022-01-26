@@ -18,23 +18,29 @@ pToBeDeleted=stone0.position;
 pToRecover=stone0.pClearedStone;
 sToRecover=stone0.sClearedStone;
 
-for idx=1:size(pToBeRestored,1)
-  x=pToBeRestored(idx,1);
-  y=pToBeRestored(idx,2);
-  state1(x,y)=s-(-1)^s;
+if(~isempty(pToBeRestored))
+  for idx=1:size(pToBeRestored,1)
+    x=pToBeRestored(idx,1);
+    y=pToBeRestored(idx,2);
+    state1(x,y)=s-(-1)^s;
+  end
 end
 
-for idx=1:size(pToBeDeleted,1)
-  x=pToBeDeleted(idx,1);
-  y=pToBeDeleted(idx,2);
-  state1(x,y)=0;
+if(~isempty(pToBeDeleted))
+  for idx=1:size(pToBeDeleted,1)
+    x=pToBeDeleted(idx,1);
+    y=pToBeDeleted(idx,2);
+    state1(x,y)=0;
+  end
 end
 
-for idx=1:size(pToRecover,1)
-  x=pToRecover(idx,1);
-  y=pToRecover(idx,2);
-  s=sToRecover(idx);
-  state1(x,y)=s;
+if(~isempty(pToRecover))
+  for idx=1:size(pToRecover,1)
+    x=pToRecover(idx,1);
+    y=pToRecover(idx,2);
+    s=sToRecover(idx);
+    state1(x,y)=s;
+  end
 end
 
 Manager.DATA.CURRENT_STONE=stone1;

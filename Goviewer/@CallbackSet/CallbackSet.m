@@ -71,6 +71,7 @@ classdef CallbackSet < handle
     CommentSyncCallback(h,e);
     CommentEditCallback(h,e);
     CommentClosedCallback(h,e);
+    CommentValueChangedCallback(h,e);
   end
   
   methods(Static)
@@ -79,6 +80,7 @@ classdef CallbackSet < handle
     StoneNodeSelectedCallback(h,e,arg);
     TreeClosedCallback(h,e);
     NodeRouteCallback(h,e);
+    EditNodeNameCallback(h,e);
   end
   
 end

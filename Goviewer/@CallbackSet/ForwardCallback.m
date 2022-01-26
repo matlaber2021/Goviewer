@@ -14,11 +14,12 @@ fig = ancestor(h,'figure');
 ax=findobj(fig,'type','axes');
 Manager = get(fig,'UserData');
 o1 = onCleanup(@() CallbackSet.CommentSyncCallback(h,e) );
-o2 = onCleanup(@() UpdateStoneMarker(h) );
+o2 = onCleanup(@() updateStoneMarkup(h) );
 o3 = onCleanup(@() UpdateStoneOrder(h) );
 o4 = onCleanup(@() ShowChildNodePath(h));
 o5 = onCleanup(@() updateStoneLabels(fig) );
 o6 = onCleanup(@() updateStoneNode(fig) );
+o7 = onCleanup(@() UpdateStoneMarker(fig) );
 
 state0=Manager.DATA.CURRENT_STATE;
 
