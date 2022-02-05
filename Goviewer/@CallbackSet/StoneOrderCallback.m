@@ -20,7 +20,12 @@ function StoneOrderCallback(h,e,option) %#ok
 %   option=1;
 % end
 
+% If we show the move number, delete the stone marker firstly.
 fig=ancestor(h,'figure');
+if(option~=1)
+  delete(findobj(fig,'tag','marker'));
+end
+
 ax=findobj(fig,'type','axes');
 h=findobj(ax,'tag','order');
 if ~isempty(h)

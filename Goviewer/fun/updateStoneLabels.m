@@ -7,10 +7,10 @@ fontsize=12;
 fig=ancestor(fig,'figure');
 delete(findobj(fig,'tag','label'));
 ax=findobj(fig,'type','axes');
-Manager=get(fig,'UserData');
-stone=Manager.DATA.CURRENT_STONE;
-M=Manager.CONFIG.BOARDSIZE(1);
-color=Manager.CONFIG.BOARDCOLOR;
+manager=get(fig,'UserData');
+stone=manager.DATA.CURRENT_STONE;
+M=manager.CONFIG.BOARDSIZE(1);
+color=manager.CONFIG.BOARDCOLOR;
 if(~isempty(stone.label))
   tokens=regexp(stone.label,'\[\s*?(\w\w):(.*?)\]','tokens');
   if(~isempty(tokens))

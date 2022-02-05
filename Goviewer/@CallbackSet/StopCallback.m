@@ -1,13 +1,14 @@
 function StopCallback(h,e)
-% Skip to the ending move.
+% Skip to the ending move along the current branch.
+%
 
 fig = ancestor(h,'figure');
 ax=findobj(fig,'type','axes');
 Manager = get(fig,'UserData');
 o1 = onCleanup(@() CallbackSet.CommentSyncCallback(h,e) );
-o2 = onCleanup(@() UpdateStoneMarker(h) );
-o3 = onCleanup(@() UpdateStoneOrder(h) );
-o4 = onCleanup(@() ShowChildNodePath(h));
+o2 = onCleanup(@() updateStoneMarker(h) );
+o3 = onCleanup(@() updateStoneOrder(h) );
+o4 = onCleanup(@() updateStonePath(h));
 o5 = onCleanup(@() updateStoneLabels(fig) );
 o6 = onCleanup(@() updateStoneNode(fig) );
 

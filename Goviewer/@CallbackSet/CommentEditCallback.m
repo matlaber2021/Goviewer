@@ -1,5 +1,5 @@
 function CommentEditCallback(h,e) %#ok
-% 编辑评论框按钮回调函数
+% the comment edit button in the comment function
 
 ufig=ancestor(h,'figure');
 textarea=findobj(ufig,'type','uitextarea');

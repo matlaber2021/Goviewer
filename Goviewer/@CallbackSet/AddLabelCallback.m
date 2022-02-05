@@ -4,8 +4,8 @@ function AddLabelCallback(h,e)
 % Check for the current Stone, to get the last label letter. Similarly,
 % depulicating from the orginal SGF infomation is both conservative way.
 fig=ancestor(h,'figure');
-Manager=get(fig,'UserData');
-stone=Manager.DATA.CURRENT_STONE;
+manager=get(fig,'UserData');
+stone=manager.DATA.CURRENT_STONE;
 if(~stone.HasBeenPlayedOnBoard)
   SGFInfoSyncFun(stone,-1);
 end
@@ -25,7 +25,7 @@ end
 o1 = onCleanup(@() SGFInfoSyncFun(stone,1));
 o2 = onCleanup(@() updateStoneLabels(fig));
 p0=round(e.IntersectionPoint);
-state=Manager.DATA.CURRENT_STATE;
+state=manager.DATA.CURRENT_STATE;
 [m,n]=size(state); %#ok
 p=char([p0(1),m+1-p0(2)]+96);
 PROPVAL1=sprintf('[%s:%s]',p,s);

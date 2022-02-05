@@ -1,7 +1,7 @@
 function BackwardCallback(h,e)
 % Backward callback, Noticing that the backward does not perform an inverse
-% operation, relative to the forward callback. Backward only fall back to 
-% the parent node. And the backward callback would not change the Stone 
+% operation, relative to the forward callback. Backward only fall back to
+% the parent node. And the backward callback would not change the Stone
 % hierarchical structure.
 %
 % Warning:
@@ -10,26 +10,23 @@ function BackwardCallback(h,e)
 
 fig = ancestor(h,'figure');
 ax=findobj(fig,'type','axes');
-Manager = get(fig,'UserData');
+manager = get(fig,'UserData');
 o1 = onCleanup(@() CallbackSet.CommentSyncCallback(h,e) );
-o2 = onCleanup(@() UpdateStoneMarker(h) );
-o3 = onCleanup(@() UpdateStoneOrder(h) );
-o4 = onCleanup(@() ShowChildNodePath(h));
-o5 = onCleanup(@() updateStoneMarkup(h) );
+o2 = onCleanup(@() updateStoneOrder(fig) );
+o3 = onCleanup(@() updateStoneMarker(fig) );
+o4 = onCleanup(@() updateStonePath(fig));
+o5 = onCleanup(@() updateStoneMarkup(fig) );
 o6 = onCleanup(@() updateStoneNode(fig) );
-% o7 = onCleanup(@() checkDim(fig) );
 
-state0=Manager.DATA.CURRENT_STATE;
-
+state0=manager.DATA.CURRENT_STATE;
 backwardfun(fig);
-state1=Manager.DATA.CURRENT_STATE;
-%stone1=Manager.DATA.CURRENT_STONE;
+state1=manager.DATA.CURRENT_STATE;
 
 [rr,cc]=find(state1~=state0);
 pp=[rr,cc];
 [m,n]=size(state1);%#ok
-theta = Manager.CONFIG.THETAFORCIRCLE;
-r=Manager.CONFIG.STONERADIUS;
+theta = manager.CONFIG.THETAFORCIRCLE;
+r=manager.CONFIG.STONERADIUS;
 
 for idx=1:size(pp,1)
   x=cc(idx)+r*cos(theta)';
@@ -44,7 +41,7 @@ for idx=1:size(pp,1)
     else
       hh = patch('parent',ax,'xdata',x,'ydata',y,'FaceColor','k');
       set(hh,'tag','stone','userdata',pp(idx,:));
-      %set(hh,'DataTipTemplate',stone1.note);
+      
     end
   elseif(state1(pp(idx,1),pp(idx,2))==2)
     if(~isempty(hh))
@@ -52,8 +49,15 @@ for idx=1:size(pp,1)
     else
       hh = patch('parent',ax,'xdata',x,'ydata',y,'FaceColor','w');
       set(hh,'tag','stone','userdata',pp(idx,:));
-      %set(hh,'DataTipTemplate',stone1.note);
+      
     end
   end
 end
-%stone1.HasBeenPlayedOnBoard=1;
+
+stone=manager.DATA.CURRENT_STONE;
+s=stone.side;
+if(isempty(s) || s==0)
+  manager.DATA.NEXTSIDE=1;
+else
+  manager.DATA.NEXTSIDE=s-(-1)^s;
+end

@@ -1,8 +1,8 @@
-function FileImportCallback(h,e)
-% 导入文件的回调函数
+function OpenFileCallback(h,e) %#ok
+% open file callback
 
 fig=ancestor(h,'figure');
-Manager=get(fig,'UserData');
+manager=get(fig,'UserData');
 
 [filename,pathname]=uigetfile({'*.sgf'});
 if(isnumeric(filename))
@@ -21,7 +21,7 @@ switch(ext)
     obj=SGFReader(fullname);
     obj.Encoding='gbk';
     SGFParser(obj);
-    Manager.DATA.CURRENT_STONE=obj.CURRENT_STONE;
+    manager.DATA.CURRENT_STONE=obj.CURRENT_STONE;
   case {'.gib'}
     ReaderObj=GIBReader();
   otherwise
@@ -29,5 +29,5 @@ switch(ext)
 end
 
 assignin('base','stone',obj.CURRENT_STONE);
-
+assignin('base','manager',manager);
 

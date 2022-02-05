@@ -1,16 +1,13 @@
 function DefaultModeCallback(h,e) %#ok
-% 黑白轮流落子模式
+% callback of move stone button
 
-% 重置其他按钮的状态属性
+% reset the other buttons' state
 resetToolButtonState(h);
 
-hList = findAllGobjects(h);
-
 fig=ancestor(h,'figure');
-Manager=get(fig,'UserData');
-s=getPropValDATA(Manager,'NEXTSIDE');
-setPropValDATA(Manager,'NEXTSIDE',s-(-1)^s);
+manager=get(fig,'UserData');
+s=manager.DATA.NEXTSIDE;
+manager.DATA.NEXTSIDE=s-(-1)^s;
 
-set(hList,'ButtonDownFcn', @CallbackSet.DefaultCallback);
-
-end
+obj=findall(findobj(fig,'type','axes'));
+set(obj,'ButtonDownFcn', @CallbackSet.DefaultCallback);

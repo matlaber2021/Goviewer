@@ -1,41 +1,34 @@
 function status = MoveNewStoneCallback(h,e,s)
-% 落子程序回调函数
+% callback of moving new stones
 %
-% MoveStoneCallback(h,e)   % 按照黑白顺序落子
-% MoveStoneCallback(h,e,1) % 指定黑棋落子
-% MoveStoneCallback(h,e,2) % 指定白棋落子
+% MoveStoneCallback(h,e,1) % move new black stone
+% MoveStoneCallback(h,e,2) % move new white stone
 %
-% 提示：该函数与Pass程序无关
+% Hint
+% The function has nothing to do with pass callbacks.
 
 fig = ancestor(h,'figure');
 ax  = findobj(fig,'type','axes');
-Manager = get(fig,'UserData');
-o1 = onCleanup(@() UpdateStoneMarker(h) );
-o2 = onCleanup(@() UpdateStoneOrder(h) );
+manager = get(fig,'UserData');
+o1 = onCleanup(@() updateStoneMarker(h) );
+o2 = onCleanup(@() updateStoneOrder(h) );
 o6 = onCleanup(@() updateStoneNode(fig) );
-state0 = getPropValDATA(Manager,'CURRENT_STATE');
-stone0 = getPropValDATA(Manager,'CURRENT_STONE');
+state0 = getPropValDATA(manager,'CURRENT_STATE');
+stone0 = getPropValDATA(manager,'CURRENT_STONE');
 
-% 获取落子区域
+% get the region of position clicked
 p = round(e.IntersectionPoint);
 p0=p;
 [m,n] = size(state0); %#ok
 p = [m+1-p(2),p(1)];
 
-% 确定落子方
-% if nargin < 3
-%   s = getPropValDATA(Manager,'NEXTSIDE');
-% end
-
-% 判断该点是否可以落子
+% decide if the position can move, try it.
 result = tryMove(state0,s,p);
 if ~result.canmove, status = 0; return, end
-stone1 = moveStone(stone0,s,p);
-refreshOrderProp(stone1);
 
-% 判断该点是否和劫有关，如果当前处于劫的位置，如果当前落子
-% 位置正好是劫位置，则无法落子
-isKOLocked = getPropValDATA(Manager,'ISKOLOCKED');
+% Decide if the point is related to ko, if the ko state is locked, the
+% position cannot move.
+isKOLocked=manager.DATA.ISKOLOCKED;
 if isKOLocked
   parentStone = stone0.parent; %#ok
   pRemovedStone0 = stone0.pRemovedStone;
@@ -45,35 +38,42 @@ if isKOLocked
       return
     end
   end
-  isKOLocked = 0;
+  
+  % BUGFIX: If double ko, maybe the ko state still locked.
+  isKOLocked = result.isko;
+  
 else %(isKOLocked==0)
-  % 造劫的过程
+  % make ko
   isKO = result.isko;
   if isKO
     isKOLocked = 1;
   end
 end
 
-% 绘制落子
-r = getPropValCONFIG(Manager,'STONERADIUS');
-theta = getPropValCONFIG(Manager,'THETAFORCIRCLE');
+% add new Stone object after ko state judgment
+stone1 = moveStone(stone0,s,p);
+refreshOrderProp(stone1);
+
+% draw moving stone
+r = getPropValCONFIG(manager,'STONERADIUS');
+theta = getPropValCONFIG(manager,'THETAFORCIRCLE');
 x1 = p0(1)+r*cos(theta);
 y1 = p0(2)+r*sin(theta);
 if s==1
-    c = 'k';
+  c = 'k';
 elseif s==2
-    c = 'w';
+  c = 'w';
 end
 
 hMove = patch(...
-    'parent',ax,'XData',x1,'YData',y1,'FaceColor',c);
+  'parent',ax,'XData',x1,'YData',y1,'FaceColor',c);
 set(hMove,'tag','stone');
-set(hMove,'userdata',p); % 追踪落子位置p（矩阵索引）
+set(hMove,'userdata',p);
 setappdata(hMove,'status',1);
 stone1.HasBeenPlayedOnBoard=1;
 playsound('move');
 
-% 去掉提子
+% remove the prisoners
 pToBeRemoved = result.totake;
 N = size(pToBeRemoved,1);
 for i = 1:N
@@ -86,13 +86,10 @@ if ~isempty(pToBeRemoved)
   playsound('deadstonemore');
 end
 
-% 保存信息
-setPropValDATA(Manager,'CURRENT_STONE',stone1);
-setPropValDATA(Manager,'CURRENT_STATE',result.state1);
-setPropValDATA(Manager,'ISKOLOCKED'   ,isKOLocked);
-setPropValDATA(Manager,'NEXTSIDE'    ,s-(-1)^s);
+% save infomation
+setPropValDATA(manager,'CURRENT_STONE',stone1);
+setPropValDATA(manager,'CURRENT_STATE',result.state1);
+setPropValDATA(manager,'ISKOLOCKED'   ,isKOLocked);
+setPropValDATA(manager,'NEXTSIDE'    ,s-(-1)^s);
 
 SGFInfoSyncFun(stone1,1);
-%showSGFInfo(stone1);
-
-end

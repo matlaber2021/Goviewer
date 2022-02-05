@@ -1,44 +1,45 @@
 classdef SGFReader < handle
-  %SGFREADER 读取并解析SmartGoFormat格式的函数
-  %
-  % 提示
-  % 该对象随时可能修改
-  
+% Need to set up a Reader object for the Smart Go Format, this object is
+% operating in read SGF file and parse it as the Stone object. The object
+% can monitor the schedule of SGF parsing progress.
+
   properties
-    Filename
-    Encoding    = []; % utf8
-    FileID
-    ShowProgressBar = 1;
+    Filename              % SGF filename
+    Encoding    = [];     % file encoding
+    FileID                % file identifier
+    ShowProgressBar = 1;  % if need to monitor progress.
   end
   
-  properties(Hidden=false)
-    TEXT
-    TEXTLENGTH            = 0;
-    CURRENT_DEPTH         = 0;  % 当前搜索深度
-    PARSING_PROPS         = 0;  % 是否正在解析Properties
-    PARSING_PROPVAL       = 0;  % 是否正在解析Property Value
-    DEPTH                 = 0;  % 搜索深度
-    CURRENT_PROPS         = ''; % 当前属性
-    CURRENT_PROPVAL       = ''; % 当前属性值
-    I                     = 1;  % 当前识别位置
+  properties(Hidden=true)
+    TEXT                        % SGF infomation, char array
+    TEXTLENGTH            = 0;  % the length of the character array
+    CURRENT_DEPTH         = 0;  % the current searching depth
+    PARSING_PROPS         = 0;  % if parsing Properties
+    PARSING_PROPVAL       = 0;  % if parsing Property Value
+    DEPTH                 = 0;  % the total searching depth
+    CURRENT_PROPS         = ''; % the current properties
+    CURRENT_PROPVAL       = ''; % the current property value
+    I                     = 1;  % the pointer of parsing
   end
   
-  properties(Hidden=false)
-    CURRENT_STONE         = Stone(); % 当前节点
-    BRANCH                = [];      % 所有分支节点
-    CURRENT_ROOT          = [];      % 当前根节点（无实义）
-    JustAddedBranch       = 0;       % 是否刚刚添加过分支节点
+  properties(Hidden=true)
+    CURRENT_STONE         = Stone(); % the current stone (root)
+    BRANCH                = [];      % all the branches
+    CURRENT_ROOT          = [];      % the root stone
+    JustAddedBranch       = 0;       % if added branch just before
   end
   
   properties(Hidden)
-    ProgressBar
-    ProgressBarTimer
+    ProgressBar          % the progress figure
+    ProgressBarTimer     % the progress monitor timer
   end
   
   methods
     
     function obj = SGFReader(filename,encoding)
-      % 读取SmartGoFormat格式的文件
+      % Reading SGF file, not parsing. If encoding argument is missing, use
+      % auto-checking way to get the encoding scheme.
+      %
       % SGFReader(filename)
       
       if exist(filename,'file')==0
@@ -406,6 +407,7 @@ classdef SGFReader < handle
     end
     
     function prepareForProgressBar(obj)
+      % the prepare work for set up the progress bar if necessary
       
       if isempty(obj.ProgressBar) || ~isvalid(obj.ProgressBar)
         createProgressBar(obj);
@@ -481,6 +483,7 @@ waitbar(progress,obj.ProgressBar,message);
 end
 
 function cleanup(h)
+% clean up function of the monitor progress.
 
 try stop(h); end %#ok
 delete(h);

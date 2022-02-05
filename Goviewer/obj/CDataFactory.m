@@ -39,6 +39,16 @@ classdef CDataFactory < handle
     Start
     Setting % 设置
     Label   % 标签
+    Flag    % 旗帜
+    
+    SelectedPoint
+    Triangle
+    Square
+    Circle
+    XMarker
+    Arrow
+    Dim
+    
   end
   
   methods
@@ -766,6 +776,120 @@ classdef CDataFactory < handle
         o o o o o o o o o o o o o o o o
         ];
       
+      obj.Flag.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o k k o o o o o o o o o o
+        o o o o k k k k o o o o o o o o
+        o o o o k k k k k k o o o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k k k k k o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k k o o o o o o
+        o o o o k k k k o o o o o o o o
+        o o o o k k o o o o o o o o o o
+        o o o o k o o o o o o o o o o o
+        o o o o k o o o o o o o o o o o
+        o o o o k o o o o o o o o o o o
+        o o o o k o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
+      obj.SelectedPoint.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k o o o o o o k o o o o
+        o o o o k o o o o o o k o o o o
+        o o o o k o o o o o o k o o o o
+        o o o o k o o o o o o k o o o o
+        o o o o k o o o o o o k o o o o
+        o o o o k o o o o o o k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
+      obj.Square.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o k k k k k k k k o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
+      obj.Triangle.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o o k o o o o o o o o
+        o o o o o o k k k o o o o o o o
+        o o o o o o k k k o o o o o o o
+        o o o o o k k k k k o o o o o o
+        o o o o o k k k k k o o o o o o
+        o o o o k k k k k k k o o o o o
+        o o o o k k k k k k k o o o o o
+        o o o k k k k k k k k k o o o o
+        o o o k k k k k k k k k o o o o
+        o o k k k k k k k k k k k o o o
+        o o k k k k k k k k k k k o o o
+        o k k k k k k k k k k k k k o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
+      obj.XMarker.cdata = [...
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o k k o o o o k k o o o o
+        o o o k k k k o o k k k k o o o
+        o o o k k k k k k k k k k o o o
+        o o o o k k k k k k k k o o o o
+        o o o o o k k k k k k o o o o o
+        o o o o o k k k k k k o o o o o
+        o o o o k k k k k k k k o o o o
+        o o o k k k k k k k k k k o o o
+        o o o k k k k o o k k k k o o o
+        o o o o k k o o o o k k o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        o o o o o o o o o o o o o o o o
+        ];
+      
+      obj.Arrow.cdata = [...
+        o o o o o o o o o o o o o o o o 
+o o o o o o o o o o o o o o o o 
+o o o o o o o o o o o o o o o o 
+o o o o o o o k k k k k k o o o 
+o o o o o o o o k k k k k o o o 
+o o o o o o o o o k k k k o o o 
+o o o o o o o o k k k k k o o o 
+o o o o o o o k k k o k k o o o 
+o o o o o o k k k o o o k o o o 
+o o o o o k k k o o o o o o o o 
+o o o o k k k o o o o o o o o o 
+o o o k k k o o o o o o o o o o 
+o o o o k o o o o o o o o o o o 
+o o o o o o o o o o o o o o o o 
+o o o o o o o o o o o o o o o o 
+o o o o o o o o o o o o o o o o 
+];
+
       
       obj.Black.hotspot = [8,8];
       obj.White.hotspot = [8,8];
@@ -804,6 +928,12 @@ classdef CDataFactory < handle
       obj.Start.hotspot=[8,8];
       obj.Setting.hotspot=[8,8];
       obj.Label.hotspot=[8,12];
+      obj.Flag.hotspot=[8,8];
+      obj.SelectedPoint.hotspot=[8,8];
+      obj.Square.hotspot=[8,8];
+      obj.Triangle.hotspot=[8,8];
+      obj.XMarker.hotspot=[8,8];
+      obj.Arrow.hotspot=[8,8];
       
     end
     

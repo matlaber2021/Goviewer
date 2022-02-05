@@ -15,26 +15,26 @@ f=ancestor(h,'figure');
 if(strcmp(f.Name,'Stone Tree'))
   ufig=f;
   fig=get(ufig,'UserData');
-  Manager=get(fig,'UserData');
-  stone1=Manager.DATA.CURRENT_STONE;
+  manager=get(fig,'UserData');
+  stone1=manager.DATA.CURRENT_STONE;
 else
   fig=f;
-  Manager=get(fig,'UserData');
-  stone1=Manager.DATA.CURRENT_STONE;
+  manager=get(fig,'UserData');
+  stone1=manager.DATA.CURRENT_STONE;
   
-  if(~isfield(Manager.CONFIG,'SHOW_TREE'))
-    Manager.CONFIG.SHOW_TREE=0;
+  if(~isfield(manager.CONFIG,'SHOW_TREE'))
+    manager.CONFIG.SHOW_TREE=0;
   end
   
-  if(Manager.CONFIG.SHOW_TREE)
-    ufig=Manager.WINDOW.TREE_WINDOW;
+  if(manager.CONFIG.SHOW_TREE)
+    ufig=manager.WINDOW.TREE_WINDOW;
   else
     return
   end
   
 end
 
-if(Manager.SKIP_TREENODE), return; end
+if(manager.SKIP_TREENODE), return; end
 
 tree=findobj(ufig,'type','uitree');
 if(isempty(tree)), return; end

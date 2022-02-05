@@ -1,23 +1,18 @@
-function BMoveModeCallback(h,e) %#ok
-% 黑棋落子模式回调函数
+function BlackMoveCallback(h,e) %#ok
+% the callback function of moving black stone
 
-hList = findAllGobjects(h);
+% adjust the callback property of all the graphics on the board
+fig=ancestor(h,'figure');
+ax=findobj(fig,'type','axes');
+children = findall(ax);
 
-% 调整棋盘图形对象的回调函数属性
 s = get(h,'state');
 if strcmp(s,'off')
-  
-  o = onCleanup(@() ...
-    set(hList,'ButtonDownFcn', @CallbackSet.DefaultCallback) );
+  set(children,'ButtonDownFcn', @CallbackSet.DefaultCallback);
 elseif strcmp(s,'on')
   
-  % 重置其他按钮的状态属性
+  % reset the other tool button state
   resetToolButtonState(h);
   
-  o = onCleanup(@() ...
-    set(hList,'ButtonDownFcn', @CallbackSet.BlackAddCallback) );
+  set(children,'ButtonDownFcn', @CallbackSet.BlackAddCallback);
 end
-
-
-end
-

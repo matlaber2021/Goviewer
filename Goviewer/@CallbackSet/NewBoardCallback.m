@@ -1,5 +1,5 @@
 function NewBoardCallback(h,e) %#ok
-% 新建棋谱的回调函数
+% new board callback
 
 fig = ancestor(h,'figure');
 ax = findobj(fig,'type','axes');
@@ -20,19 +20,9 @@ deleteStone(ROOT);
 % Reset the UserDataManager object
 GoViewer.initUserDataManager(fig);
 
-% Delete all the stones
-hStones = findobj(ax,'tag','stone');
-delete(hStones);
-
-% Delete all the markers
-marker = findobj(ax,'tag','marker','type','patch');
-delete(marker);
-
-% Delete all the move numbers
-numbers=findobj(ax,'tag','order');
-delete(numbers);
+% Delete all the graphic objects on the board
+delete(allchild(ax));
 
 % Reactivate the callbacks on the board
+ax = GoViewer.DrawComponentsOnBoard(fig);
 GoViewer.initCallbackOnBoard(ax);
-
-end

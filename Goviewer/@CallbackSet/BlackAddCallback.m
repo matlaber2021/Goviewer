@@ -1,5 +1,5 @@
-function BlackMoveCallback(h,e)
-% 黑棋落子（与悔棋）回调函数
+function BlackAddCallback(h,e)
+% callback function of the added black stone button.
 
 iPoint = e.Button;
 if iPoint==1

@@ -1,5 +1,5 @@
 function CommentClosedCallback(h,e) %#ok
-% 评论弹窗关闭前的回调函数
+% callback function before closing the comment window.
 
 fig=get(h,'UserData');
 Manager=get(fig,'UserData');

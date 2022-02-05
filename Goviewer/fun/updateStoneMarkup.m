@@ -4,11 +4,11 @@ function updateStoneMarkup(fig)
 fig=ancestor(fig,'figure');
 deleteMarkups(fig);
 ax=findobj(fig,'type','axes');
-Manager=get(fig,'UserData');
-stone=Manager.DATA.CURRENT_STONE;
-m=Manager.CONFIG.BOARDSIZE(1);
-color=Manager.CONFIG.BOARDCOLOR;
-theta=Manager.CONFIG.THETAFORCIRCLE;
+manager=get(fig,'UserData');
+stone=manager.DATA.CURRENT_STONE;
+m=manager.CONFIG.BOARDSIZE(1);
+color=manager.CONFIG.BOARDCOLOR;
+theta=manager.CONFIG.THETAFORCIRCLE;
 fontname='Arial';
 fontsize=12;
 

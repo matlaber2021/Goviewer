@@ -1,14 +1,15 @@
-function CommentCallback(h,e)
+function CommentCallback(h,e) %#ok
+% callback function for showing the comment window.
 
 fig=ancestor(h,'figure');
-Manager=get(fig,'UserData');
-stone=Manager.DATA.CURRENT_STONE;
+manager=get(fig,'UserData');
+%stone=manager.DATA.CURRENT_STONE;
 
-if(~isfield(Manager.CONFIG,'SHOW_COMMENT'))
-  Manager.CONFIG.SHOW_COMMENT=0;
+if(~isfield(manager.CONFIG,'SHOW_COMMENT'))
+  manager.CONFIG.SHOW_COMMENT=0;
 end
 
-if(~Manager.CONFIG.SHOW_COMMENT)
-  Manager.CONFIG.SHOW_COMMENT=1;
+if(~manager.CONFIG.SHOW_COMMENT)
+  manager.CONFIG.SHOW_COMMENT=1;
   GoViewer.CreateCommentWindow(fig);
 end

@@ -1,46 +1,72 @@
 classdef Stone < handle
-  
+% Stone object is the core data structure in the Goviewer. However, it can
+% not only record the moved or added stone states, but also record
+% non-stone states (the game info, and even the object has no substanive
+% meaning as well). The object is designed from Smart-Go-Format Rule.
+% 
+% Stone object is handle class having parent and children properties. And 
+% it has also some basic SGF properties which can parsed by SGFParser 
+% method from SGFReader handle object.
+%
+% To initalize the Stone, type "obj = Stone();" Remember that obj is the
+% root object with no parents.
+%
+% Example
+% % Add the child from the obj
+% obj = Stone();
+% newstone = addChild(obj);
+%
+% % DO-NOT use this !
+% obj.children = Stone();
+%
+% Notice
+% The Stone object data structure may be quite complex to read when reading
+% from some huge *.sgf files.
+
   properties(AbortSet,SetObservable)
-    parent          % 前落子
-    children        % 后落子
-    status = 0;     % ?
-    side = [];      % 落子方
-    position = [];  % 落子位置
-    order = 0;      % 落子序号（初始化0）
+    parent          % the only parent stone
+    children        % the children stones
+    status = 0;     % 0:none 1:moved-stone 2:added-stone
+    side = [];      % 1:black 2:white []|0: none
+    position = [];  % the position[s] of the stone, 
+    order = 0;      % the order of stone, giving priority to MN SGF property
   end
     
-  properties
-    comment         char
-    move_number     % MN属性
-    note = [];      %
-    label = '';     %
-    dim
-    view
-    triangle
-    circle
-    selected
-    mark
-    square
-    arrow
-    line
-    territory_black
-    territory_white
+  % properties from SGF infomation
+  properties(Hidden=true)
+    comment char    % C[*]
+    move_number     % MN[*]
+    note = [];      % N[*]
+    label = '';     % LB[*]
+    dim             % DD[*]
+    view            % VM[*]
+    triangle        % TR[*]
+    circle          % CR[*]
+    selected        % SL[*]
+    mark            % MR[*]  
+    square          % SR[*]
+    arrow           % AR[*] 
+    line            % LN[*]
+    territory_black % TB[*]
+    territory_white % TW[*] 
   end
   
-  properties(Hidden=false,AbortSet,SetObservable)
-    pRemovedStone   % 提子位置
-    pClearedStone   % 清子位置 UPDATE
-    sClearedStone   % 清子方   UPDATE
-    SGFPROPS        %
-    SGFPROPVAL      %
-    SGFEXCEPTION    % 无法正常解析的SGF信息
-    HasBeenPlayedOnBoard = 0;  % 是否棋盘上摆过
-    ShownInTreeNode = 0;
-    TreeNode
+  properties(Hidden=true,AbortSet,SetObservable)
+    pRemovedStone               % the pos of prisoner
+    pClearedStone               % the pos of cleared stone
+    sClearedStone               % the side of cleared stone
+    SGFPROPS                    % SGF props
+    SGFPROPVAL                  % SGF property values
+    SGFEXCEPTION                % the unparsed SGF infomation
+    HasBeenPlayedOnBoard = 0;   % has been played on board
+    ShownInTreeNode = 0;        % be shown in the treenode
+    TreeNode                    % treenode of which
   end
   
   methods(Static)
     function obj = init()
+      % The initial state of the stone tree structure is the root tree
+      % contains one gameinfo Stone data.
       
       obj = Stone();
       addStone(obj,[],[]);
@@ -53,7 +79,7 @@ classdef Stone < handle
   
   methods
     function obj = Stone(sz)
-      % 创建初始棋子对象
+      % build an intial Stone object
       
       if nargin==0
         return
@@ -84,17 +110,17 @@ classdef Stone < handle
   methods
     
     function newstone = addChild(obj)
-      % 添加obj.children对象
+      % add the child stone of the current stone
       
       newstone = moveStone(obj,0,[]);
       
     end
     
     function newstone = addStone(obj,s,p)
-      % 创建新棋子对象
+      % add an added initial stone of the current stone.
       
       newstone = Stone();
-      setPropVal(newstone,'status',2); % 1:move 2:place
+      setPropVal(newstone,'status',2); % 1:move 2:add
       setPropVal(newstone,'side',s);
       setPropVal(newstone,'position',p);
       setPropVal(newstone,'parent',obj);
@@ -104,26 +130,14 @@ classdef Stone < handle
     
     
     function newstone = moveStone(obj,s,p)
-      % 创建新落子对象
+      % move from the current stone
       
-      % 记录落子对象，该函数并不起视觉效果
+      % record the new moved stone, but with no visiual effect.
       newstone = Stone();
-      setPropVal(newstone,'status',1); % 1:move 2:place
+      setPropVal(newstone,'status',1); % 1:move 2:add
       setPropVal(newstone,'side',s);
       setPropVal(newstone,'position',p);
       setPropVal(newstone,'parent',obj);
-      
-      % 如果刚开始创建新建分支，新分支的序号重新设定为1
-      % 如果单一承接上一棋子，则序号递增
-      %if s~=0
-      %  if ~isempty(obj.children)
-      %    if length(obj.children)>1
-      %      setPropVal(newstone,'order',1);
-      %    else
-      %      setPropVal(newstone,'order',obj.order+1);
-      %    end
-      %  end
-      %end
       
     end
     
@@ -164,15 +178,6 @@ classdef Stone < handle
       
       idx=1; % initialize index
       L = 0;
-      %branch = obj.parent;
-      %branch0 = [];
-      %if isempty(branch), return, end
-      %L=1;
-      %while isscalar(branch.children) && ~isempty(branch.parent)
-      %  branch0 = branch;
-      %  branch = branch.parent;
-      %  L = L+1;
-      %end
       branch=obj;
       while(1)
         branch0=branch;
@@ -282,9 +287,10 @@ classdef Stone < handle
     end% findNextStone
     
     function h = findall(obj)
-      % 找到所有子节点（不包括本身）
+      % findall, like allchild function used on the graphic object. 
+      % Display all the descendant of the current object.
       
-      % BUG(多分支)
+      % BUGFIX
       h = [];
       c = obj.children;
       h = [h; obj.children];
@@ -299,7 +305,7 @@ classdef Stone < handle
     end % findall
     
     function ok = isDirectLine(A,B)
-      % 判断是否是直系亲属
+      % Decide if A and B are on the same direct line.
       
       ok=0;
       O=A;
@@ -314,7 +320,7 @@ classdef Stone < handle
     end% isDirectLine
     
     function showSGFInfo(obj)
-      % 展示SGF信息
+      % show the SGF infomation
       
       if(~isempty(obj.SGFPROPS))
         args=[obj.SGFPROPS;obj.SGFPROPVAL];
@@ -325,7 +331,7 @@ classdef Stone < handle
     end % showSGFInfo
     
     function str = displaySGFInfo(obj)
-      %
+      % display the SGF infomation
       
       if(~isempty(obj.SGFPROPS))
         args=[obj.SGFPROPS;obj.SGFPROPVAL];
@@ -337,7 +343,7 @@ classdef Stone < handle
     end% displaySGFInfo
     
     function refreshOrderProp(obj)
-      % 更新棋子的顺序
+      % update the Stone order property value.
       
       if(~isempty(obj.move_number))
         if(~isnan(obj.move_number))

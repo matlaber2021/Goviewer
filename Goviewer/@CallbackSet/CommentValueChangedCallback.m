@@ -3,8 +3,8 @@ function CommentValueChangedCallback(h,e) %#ok
 
 ufig=ancestor(h,'figure');
 fig=get(ufig,'UserData');
-Manager=get(fig,'UserData');
-stone=Manager.DATA.CURRENT_STONE;
+manager=get(fig,'UserData');
+stone=manager.DATA.CURRENT_STONE;
 if(~isequal(stone.comment,h.Value))
   stone.comment=h.Value;
 end

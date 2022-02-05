@@ -1,13 +1,14 @@
-function ShowChildNodePath(h)
-% Find the child node paths.
+function updateStonePath(h)
+% update the stone path if stone has many children, will show the child 
+% stone's labels.
 
 fig=ancestor(h,'figure');
 ax=findobj(fig,'type','axes');
 path=findobj(fig,'tag','path');
 delete(path);
-Manager=get(fig,'UserData');
-stone=Manager.DATA.CURRENT_STONE;
-state=Manager.DATA.CURRENT_STATE;
+manager=get(fig,'UserData');
+stone=manager.DATA.CURRENT_STONE;
+state=manager.DATA.CURRENT_STATE;
 [m,n]=size(state);%#ok
 L=length(stone.children);
 if(L==1), return; end
@@ -15,7 +16,6 @@ if(L==1), return; end
 fontname='Arial';
 fontsize=12;
 idx=1;
-
 
 for i=1:L
   NO_CALLBACK=0;
@@ -136,3 +136,4 @@ for i=1:L
     idx=idx+1;
   end
 end
+

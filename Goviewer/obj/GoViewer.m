@@ -32,6 +32,7 @@ classdef GoViewer < handle
       % 激活棋盘回调函数
       GoViewer.initCallbackOnBoard(ax);
       
+      
     end
     
     function fig = initGoViwerFigure()
@@ -119,7 +120,7 @@ classdef GoViewer < handle
       hTBar2 = uitoolbar(fig);
       
       hBtn_File=uipushtool(hTBar1,'CData',CData2RGB(obj.File.cdata) );
-      set(hBtn_File,'ClickedCallback',@CallbackSet.FileImportCallback);
+      set(hBtn_File,'ClickedCallback',@CallbackSet.OpenFileCallback);
       set(hBtn_File,'Tooltip','open');
       
       hBtn_Save=uipushtool(hTBar1,'CData',CData2RGB(obj.Save.cdata) );
@@ -142,26 +143,18 @@ classdef GoViewer < handle
       set(hBtn_Turn,'ClickedCallback',@CallbackSet.DefaultModeCallback);
       set(hBtn_Turn,'Tooltip','default move');
       
-      hBtn_BPass = uipushtool  (hTBar1,'CData',CData2RGB(obj.BPass.cdata) );
-      set(hBtn_BPass,'ClickedCallback',@CallbackSet.BlackPassCallback);
-      set(hBtn_BPass,'Tooltip','black pass');
-      
-      hBtn_WPass = uipushtool  (hTBar1,'CData',CData2RGB(obj.WPass.cdata) );
-      set(hBtn_WPass,'ClickedCallback',@CallbackSet.WhitePassCallback);
-      set(hBtn_WPass,'Tooltip','white pass');
-      
       hBtn_Delete = uipushtool (hTBar1,'CData',CData2RGB(obj.Delete.cdata, [1,0,0]) );
       set(hBtn_Delete,'ClickedCallback',@CallbackSet.RetractStoneCallback );
       set(hBtn_Delete,'Tooltip','delete');
       
-      hBtn_Resign = uipushtool (hTBar1,'CData',CData2RGB(obj.Resign.cdata) );
-      set(hBtn_Resign,'ClickedCallback',@CallbackSet.ResignCallback );
-      set(hBtn_Resign,'Tooltip','resign');
-      set(hBtn_Resign,'Enable','off');
+      hBtn_Pass = uipushtool (hTBar1,'CData',CData2RGB(obj.Resign.cdata) );
+      set(hBtn_Pass,'ClickedCallback',@CallbackSet.PassCallback );
+      set(hBtn_Pass,'Tooltip','pass');
+      set(hBtn_Pass,'Enable','on');
       
       hBtn_Option = uipushtool(hTBar2,'CData',CData2RGB(obj.Setting.cdata) );
       set(hBtn_Option,'ClickedCallback',[])
-      set(hBtn_Option,'Tooltip','option');      
+      set(hBtn_Option,'Tooltip','option'); 
       
       hBtn_Rotate = uipushtool(hTBar2,'CData',CData2RGB(obj.Rotate.cdata) );
       set(hBtn_Rotate,'ClickedCallback',@CallbackSet.RotateCallback)
@@ -254,6 +247,7 @@ classdef GoViewer < handle
     function ax = DrawComponentsOnBoard(h)
       % 在棋盘上绘制元素
       
+      delete(findobj(h,'type','axes'));
       ax  = axes(h);
       o = onCleanup(@() set(ax,'LooseInset',[0,0,0,0]));
       fig = ancestor(h,'figure');

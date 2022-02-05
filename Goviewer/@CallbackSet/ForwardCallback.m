@@ -12,25 +12,24 @@ function ForwardCallback(h,e,idx)
 
 fig = ancestor(h,'figure');
 ax=findobj(fig,'type','axes');
-Manager = get(fig,'UserData');
+manager = get(fig,'UserData');
 o1 = onCleanup(@() CallbackSet.CommentSyncCallback(h,e) );
-o2 = onCleanup(@() updateStoneMarkup(h) );
-o3 = onCleanup(@() UpdateStoneOrder(h) );
-o4 = onCleanup(@() ShowChildNodePath(h));
+o2 = onCleanup(@() updateStoneMarkup(fig) );
+o3 = onCleanup(@() updateStoneOrder(fig) );
+o4 = onCleanup(@() updateStonePath(fig));
 o5 = onCleanup(@() updateStoneLabels(fig) );
 o6 = onCleanup(@() updateStoneNode(fig) );
-o7 = onCleanup(@() UpdateStoneMarker(fig) );
+o7 = onCleanup(@() updateStoneMarker(fig) );
 
-state0=Manager.DATA.CURRENT_STATE;
-
+state0=manager.DATA.CURRENT_STATE;
 if nargin==2
   forwardfun(fig);
 elseif(nargin==3)
   forwardfunToChild(fig,idx);
 end
 
-state1=Manager.DATA.CURRENT_STATE;
-stone1=Manager.DATA.CURRENT_STONE;
+state1=manager.DATA.CURRENT_STATE;
+stone1=manager.DATA.CURRENT_STONE;
 
 [rr,cc]=find(state1~=state0);
 pp=[rr,cc];
@@ -51,7 +50,7 @@ for idx=1:size(pp,1)
     else
       hh = patch('parent',ax,'xdata',x,'ydata',y,'FaceColor','k');
       set(hh,'tag','stone','userdata',pp(idx,:));
-      %set(hh,'DataTipTemplate',stone1.note);
+      
     end
   elseif(state1(pp(idx,1),pp(idx,2))==2)
     if(~isempty(hh))
@@ -59,8 +58,15 @@ for idx=1:size(pp,1)
     else
       hh = patch('parent',ax,'xdata',x,'ydata',y,'FaceColor','w');
       set(hh,'tag','stone','userdata',pp(idx,:));
-      %set(hh,'DataTipTemplate',stone1.note);
+      
     end
   end
 end
 stone1.HasBeenPlayedOnBoard=1;
+
+s=stone1.side;
+if(isempty(s) || s==0)
+  manager.DATA.NEXTSIDE=1;
+else
+  manager.DATA.NEXTSIDE=s-(-1)^s;
+end

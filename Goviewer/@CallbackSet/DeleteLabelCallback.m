@@ -2,8 +2,8 @@ function DeleteLabelCallback(h,e)
 % callback of deleting the label
 
 fig=ancestor(h,'figure');
-Manager=get(fig,'UserData');
-state=Manager.DATA.CURRENT_STATE;
+manager=get(fig,'UserData');
+state=manager.DATA.CURRENT_STATE;
 [m,n]=size(state); %#ok
 
 %o = onCleanup(@() delete@handle(h));
@@ -14,7 +14,7 @@ p(2)=char(m+1-position(2)+96);
 s=get(h,'String');
 PROPVAL1=sprintf('[%s:%s]',p,s);
 
-stone=Manager.DATA.CURRENT_STONE;
+stone=manager.DATA.CURRENT_STONE;
 SGFPROPS=strtrim(stone.SGFPROPS);
 pos=strcmp(SGFPROPS,'LB');
 SGFPROPVAL=stone.SGFPROPVAL;

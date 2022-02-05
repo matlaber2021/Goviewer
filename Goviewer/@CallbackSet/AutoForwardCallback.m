@@ -14,14 +14,14 @@ function AutoForwardCallback(h,e)
 % tree-node skip mode?
 
 fig=ancestor(h,'figure');
-Manager=get(fig,'UserData');
-Manager.SKIP_TREENODE=1;
+manager=get(fig,'UserData');
+manager.SKIP_TREENODE=1;
 
 while strcmp(get(h,'State'),'on')
   CallbackSet.ForwardCallback(h,e);
   pause(0.2);
 end
-Manager.SKIP_TREENODE=0;
+manager.SKIP_TREENODE=0;
 updateStoneNode(fig);
 
 end

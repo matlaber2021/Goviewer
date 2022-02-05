@@ -1,51 +1,50 @@
 function AddStoneCallback(h,e,s)
-% 添加落子的回调函数
+% adding black or white stone callback
 
-fig = ancestor(h,'figure');
-ax  = findobj(fig,'type','axes');
-Manager = get(fig,'UserData');
+fig=ancestor(h,'figure');
+ax=findobj(fig,'type','axes');
+manager=get(fig,'UserData');
 
 o1 = onCleanup(@() CallbackSet.CommentSyncCallback(h,e) );
-o2 = onCleanup(@() UpdateStoneMarker(h) );
-o3 = onCleanup(@() UpdateStoneOrder(h) );
-o4 = onCleanup(@() ShowChildNodePath(h));
-o5 = onCleanup(@() updateStoneLabels(h) );
+o2 = onCleanup(@() updateStoneOrder(fig) );
+o3 = onCleanup(@() updateStoneMarker(fig) );
+o4 = onCleanup(@() updateStonePath(fig));
+o5 = onCleanup(@() updateStoneLabels(fig) );
 o6 = onCleanup(@() updateStoneNode(fig) );
 
-state0 = getPropValDATA(Manager,'CURRENT_STATE');
-stone0 = getPropValDATA(Manager,'CURRENT_STONE');
+state0 = getPropValDATA(manager,'CURRENT_STATE');
+stone0 = getPropValDATA(manager,'CURRENT_STONE');
 
-% 获取落子区域
+% gain the region of moving stones
 p = round(e.IntersectionPoint);
 p0=p;
 [m,n] = size(state0); %#ok
 p = [m+1-p(2),p(1)];
 if state0(p(1),p(2))~=0, return, end
 
-% 绘制落子
-r = getPropValCONFIG(Manager,'STONERADIUS');
-theta = getPropValCONFIG(Manager,'THETAFORCIRCLE');
+% start to draw stones
+r = getPropValCONFIG(manager,'STONERADIUS');
+theta = getPropValCONFIG(manager,'THETAFORCIRCLE');
 x1 = p0(1)+r*cos(theta);
 y1 = p0(2)+r*sin(theta);
 if s==1
-    c = 'k';
+  c = 'k';
 elseif s==2
-    c = 'w';
+  c = 'w';
 end
 
 hAdd = patch(...
-    'parent',ax,'XData',x1,'YData',y1,'FaceColor',c);
+  'parent',ax,'XData',x1,'YData',y1,'FaceColor',c);
 set(hAdd,'tag','stone');
-set(hAdd,'userdata',p); % 追踪落子位置p（矩阵索引）
+set(hAdd,'userdata',p); % using matrix index to trace the stone drawn.
 setappdata(hAdd,'status',2);
 
-% 保存信息
+% save the manager infomation
 state1=state0;
 state1(p(1),p(2))=s;
 stone1 = addStone(stone0,s,p); % TODO...
 stone1.HasBeenPlayedOnBoard=1;
 refreshOrderProp(stone1);
-setPropValDATA(Manager,'CURRENT_STONE',stone1);
-setPropValDATA(Manager,'CURRENT_STATE',state1);
+setPropValDATA(manager,'CURRENT_STONE',stone1);
+setPropValDATA(manager,'CURRENT_STATE',state1);
 SGFInfoSyncFun(stone1,1);
-%showSGFInfo(stone1);

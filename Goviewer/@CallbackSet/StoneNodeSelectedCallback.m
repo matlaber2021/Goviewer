@@ -8,16 +8,15 @@ if(isempty(node)), return; end
 ufig=ancestor(h,'figure');
 fig=get(ufig,'UserData');
 ax=findobj(fig,'type','axes');
-Manager=get(fig,'UserData');
-stone0=Manager.DATA.CURRENT_STONE;
-state0=Manager.DATA.CURRENT_STATE;
+manager=get(fig,'UserData');
+stone0=manager.DATA.CURRENT_STONE;
+state0=manager.DATA.CURRENT_STATE;
 
 o1 = onCleanup(@() CallbackSet.CommentSyncCallback(fig,[]) );
-o2 = onCleanup(@() UpdateStoneMarker(fig) );
-o3 = onCleanup(@() UpdateStoneOrder(fig) );
-o4 = onCleanup(@() ShowChildNodePath(fig));
+o2 = onCleanup(@() updateStoneMarker(fig) );
+o3 = onCleanup(@() updateStoneOrder(fig) );
+o4 = onCleanup(@() updateStonePath(fig));
 o5 = onCleanup(@() updateStoneMarkup(fig));
-% o6 = onCleanup(@() checkDim(fig) );
 
 stone1=node.NodeData;
 route=getStoneRoute(stone0,stone1);
@@ -29,8 +28,8 @@ for idx=1:length(route.direction)
   end
 end
 
-state1=Manager.DATA.CURRENT_STATE;
-stone1_=Manager.DATA.CURRENT_STONE;
+state1=manager.DATA.CURRENT_STATE;
+stone1_=manager.DATA.CURRENT_STONE;
 
 if(~isequal(stone1,stone1_))
   error('路径错误，原因待排查...');

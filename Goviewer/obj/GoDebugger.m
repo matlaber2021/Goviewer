@@ -37,7 +37,51 @@ classdef GoDebugger < handle
       end
       
     end
+    
+    function result=block_analysis()
+      fig=gcf;
+      Manager=get(fig,'UserData');
+      state=Manager.DATA.CURRENT_STATE;
+      result=block_analysis(state);
+      
+    end
+    
+    function varargout=territory_show()
+      delete(findobj(gca,'tag','territory'));
+      fig=gcf;
+      Manager=get(fig,'UserData');
+      state=Manager.DATA.CURRENT_STATE;
+      
+      result=influence_territory(state);
+      territory=result.potential_territory;
+      
+      for i=1:19
+        for j=1:19
+          if(territory(i,j)==1)
+            color='k';
+          elseif(territory(i,j)==2)
+            color='w';
+          else
+            color=[];
+          end
+          
+          X=j;
+          Y=20-i;
+          x=[X-0.5;X-0.5;X+0.5;X+0.5;X-0.5];
+          y=[Y+0.5;Y-0.5;Y-0.5;Y+0.5;Y+0.5];
+          
+          if(~isempty(color))
+            patch(gca,'XData',x,'YData',y,'FaceColor',color,'FaceAlpha',0.3,...
+              'EdgeColor','none','tag','territory');
+          end
+        end
+      end
+      
+      if(nargout==1)
+        varargout{1}=result;
+      end
+      
+    end
+    
   end
-  
-  
 end

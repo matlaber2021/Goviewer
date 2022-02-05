@@ -1,5 +1,5 @@
 function MoveStoneCallback(h,e,s)
-% 落子程序
+% move callback function, including forward stone.
 
 fig = ancestor(h,'figure');
 Manager = get(fig,'UserData');
@@ -11,7 +11,7 @@ p=round(e.IntersectionPoint); % Board Index
 p0=p; % Matrix Index
 p = [m+1-p(2),p(1)];
 
-% 查找当前落子位置是否是已知节点
+% look for the current position is the node known yet before.
 children=stone0.children;
 L=length(children);
 isNewStone=1;
