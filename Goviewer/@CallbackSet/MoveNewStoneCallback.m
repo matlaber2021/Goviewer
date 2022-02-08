@@ -12,7 +12,9 @@ ax  = findobj(fig,'type','axes');
 manager = get(fig,'UserData');
 o1 = onCleanup(@() updateStoneMarker(h) );
 o2 = onCleanup(@() updateStoneOrder(h) );
-o6 = onCleanup(@() updateStoneNode(fig) );
+o3 = onCleanup(@() updateStoneNode(fig) );
+o4 = onCleanup(@() updateStonePath(fig) );
+o5 = onCleanup(@() updateStoneMarkup(fig) );
 state0 = getPropValDATA(manager,'CURRENT_STATE');
 stone0 = getPropValDATA(manager,'CURRENT_STONE');
 

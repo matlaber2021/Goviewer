@@ -1,15 +1,16 @@
-function OpenFileCallback(h,e) %#ok
+function OpenFileCallback(h,e)
 % open file callback
 
-fig=ancestor(h,'figure');
-manager=get(fig,'UserData');
-
-[filename,pathname]=uigetfile({'*.sgf'});
+[filename,pathname]=uigetfile({'*.sgf;*.gib'});
 if(isnumeric(filename))
   if(filename==0)
     return
   end
 end
+
+CallbackSet.NewBoardCallback(h,e);
+fig=ancestor(h,'figure');
+manager=get(fig,'UserData');
 
 if(ischar(filename))
   fullname=fullfile(pathname,filename);
@@ -23,11 +24,13 @@ switch(ext)
     SGFParser(obj);
     manager.DATA.CURRENT_STONE=obj.CURRENT_STONE;
   case {'.gib'}
-    ReaderObj=GIBReader();
+    result=GIBParser(fullname);
+    root=findAncestor(result.stone);
+    manager.DATA.CURRENT_STONE=root.children(1);
   otherwise
     
 end
 
-assignin('base','stone',obj.CURRENT_STONE);
-assignin('base','manager',manager);
 
+assignin('base','stone',manager.DATA.CURRENT_STONE);
+assignin('base','manager',manager);

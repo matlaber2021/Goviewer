@@ -15,9 +15,8 @@ classdef CallbackSet < handle
     OpenFileCallback(h,e);
     SaveFileCallback(h,e);
     NewBoardCallback(h,e);
-    BlackModeCallback(h,e);
-    WhiteModeCallback(h,e);
-    DefaultModeCallback(h,e);
+    AddStoneCallback(h,e,s);
+    DefaultCallback(h,e);
     PassCallback(h,e);
     RetractStoneCallback(h,e);
     ResignCallback(h,e);
@@ -37,21 +36,16 @@ classdef CallbackSet < handle
     ScanShotCallback(h,e);
     CommentCallback(h,e);
     TreeNodeCallback(h,e);
-    LabelCallback(h,e);    
+    LabelCallback(h,e);
+    ArrowCallback(h,e,option);
   end
   
   % Callbacks on the graphic objects on the board
   methods(Static)
     
     % the default move
-    DefaultCallback(h,e);
     MoveStoneCallback(h,e,s);
     MoveNewStoneCallback(h,e,s);
-    
-    % add stone
-    AddStoneCallback(h,e,s);
-    WhiteAddCallback(h,e);
-    BlackAddCallback(h,e);
     
     % add label
     AddLabelCallback(h,e);
@@ -59,8 +53,6 @@ classdef CallbackSet < handle
     
     % move number
     StoneOrderCallback(h,e,option);
-    
-    %RecordModeCallback(h,e,time);
     
     % engine
     SaveLeelazOptionsCallback(h,e);
@@ -84,6 +76,22 @@ classdef CallbackSet < handle
     TreeClosedCallback(h,e);
     NodeRouteCallback(h,e);
     EditNodeNameCallback(h,e);
+  end
+  
+  % Java
+  methods(Static)
+    function MouseWheelCallback(h,e)
+      % Control back and forward move step by the mouse wheel.
+      
+      fig=getappdata(h,'Figure');
+      if(isempty(fig)), return; end
+      if(handle(e).getPreciseWheelRotation==-1)
+        CallbackSet.BackwardCallback(fig,[]);
+      elseif(handle(e).getPreciseWheelRotation==1)
+        CallbackSet.ForwardCallback(fig,[]);
+      end
+      
+    end
   end
   
 end

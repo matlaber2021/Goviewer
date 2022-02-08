@@ -1,6 +1,9 @@
 function AddStoneCallback(h,e,s)
 % adding black or white stone callback
 
+flag=checkToggleButtonHandle(h,s);
+if(flag), return; end
+
 fig=ancestor(h,'figure');
 ax=findobj(fig,'type','axes');
 manager=get(fig,'UserData');
@@ -48,3 +51,34 @@ refreshOrderProp(stone1);
 setPropValDATA(manager,'CURRENT_STONE',stone1);
 setPropValDATA(manager,'CURRENT_STATE',state1);
 SGFInfoSyncFun(stone1,1);
+
+function flag=checkToggleButtonHandle(h,s)
+% If the handle vararible is uitoggle object, then other uitoggle button
+% state will be released after pushing it. If handle variable is other
+% object, just neglect this function.
+%
+% But if the button needs to release, then need to restore the objects on
+% the board to make sure the callback property is default value.
+
+if ~isa(h,'matlab.ui.container.toolbar.ToggleTool')
+  flag=0;
+  return
+else
+  flag=1;
+end
+
+fig=ancestor(h,'figure');
+ax=findobj(fig,'type','axes');
+%GoViewer.initCallbackOnBoard(ax);
+children = findall(ax);
+
+if strcmp(h.State,'on')
+  toolbar=h.Parent;
+  obj=findobj(toolbar,'-not','tooltip',get(h,'tooltip'),...
+    'type','uitoggletool');
+  set(obj,'State','off');
+  
+  set(children,'ButtonDownFcn',{@CallbackSet.AddStoneCallback,s});
+else
+  set(children,'ButtonDownFcn',@CallbackSet.DefaultCallback);
+end

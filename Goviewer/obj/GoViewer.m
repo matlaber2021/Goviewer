@@ -132,15 +132,15 @@ classdef GoViewer < handle
       set(hBtn_New,'Tooltip','new board');
       
       hBtn_BMove = uitoggletool(hTBar1,'CData',CData2RGB(obj.Black.cdata) );
-      set(hBtn_BMove,'ClickedCallback',@CallbackSet.BlackModeCallback);
+      set(hBtn_BMove,'ClickedCallback',{@CallbackSet.AddStoneCallback,1});
       set(hBtn_BMove,'Tooltip','black add');
       
       hBtn_WMove = uitoggletool(hTBar1,'CData',CData2RGB(obj.White.cdata) );
-      set(hBtn_WMove,'ClickedCallback',@CallbackSet.WhiteModeCallback);
+      set(hBtn_WMove,'ClickedCallback',{@CallbackSet.AddStoneCallback,2});
       set(hBtn_WMove,'Tooltip','white add');
       
       hBtn_Turn  = uipushtool(hTBar1,'CData',CData2RGB(obj.ByTurn.cdata) );
-      set(hBtn_Turn,'ClickedCallback',@CallbackSet.DefaultModeCallback);
+      set(hBtn_Turn,'ClickedCallback',@CallbackSet.DefaultCallback);
       set(hBtn_Turn,'Tooltip','default move');
       
       hBtn_Delete = uipushtool (hTBar1,'CData',CData2RGB(obj.Delete.cdata, [1,0,0]) );
@@ -203,6 +203,10 @@ classdef GoViewer < handle
       hBtn_Label = uitoggletool(hTBar2,'CData',CData2RGB(obj.Label.cdata) );
       set(hBtn_Label,'ClickedCallback',@CallbackSet.LabelCallback);
       set(hBtn_Label,'Tooltip','label');
+      
+      hBtn_Arrow = uitoggletool(hTBar2,'CData',CData2RGB(obj.Arrow.cdata) );
+      set(hBtn_Arrow,'ClickedCallback',@CallbackSet.ArrowCallback);
+      set(hBtn_Arrow,'Tooltip','arrow');
       
     end
     
@@ -519,10 +523,10 @@ classdef GoViewer < handle
       end
       
       setappdata(component,'Figure',fig);
-      funhandle=@(h,e)JavaCallbackSet.MouseWheelCallback(h,e);
+      funhandle=@(h,e)CallbackSet.MouseWheelCallback(h,e);
       
-      setJavaCallback(component,'MousePressedCallback',[]);
-      setJavaCallback(component,'MouseWheelMovedCallback',[]);
+      %setJavaCallback(component,'MousePressedCallback',[]);
+      setJavaCallback(component,'MouseWheelMovedCallback',funhandle);
       
     end % getJavaFigureComponent
     

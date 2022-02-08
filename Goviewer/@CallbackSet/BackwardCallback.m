@@ -61,3 +61,6 @@ if(isempty(s) || s==0)
 else
   manager.DATA.NEXTSIDE=s-(-1)^s;
 end
+
+% bugfix: 20220206
+manager.DATA.ISKOLOCKED=0;

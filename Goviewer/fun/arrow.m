@@ -33,6 +33,8 @@ if(x(1)~=x(2))
     y2=y(2);
     D=sqrt((x1-x2)^2+(y1-y2)^2);
     k1=(y2-y1)/(x2-x1);
+    
+    % math: k[1]*k[2]=-1 <=> l1 is perpendicular to l2
     theta=[atan(-1/k1);atan(-1/k1)+pi];
     x0=x2-(l/D)*(x2-x1);
     y0=y2-(l/D)*(y2-y1);
@@ -43,6 +45,9 @@ if(x(1)~=x(2))
   end
 end
 
-line(ax,'XData',x,'YData',y,'Tag','arrow','Color','m','LineWidth',2);
-patch(ax,'XData',x_a,'YData',y_a,'Tag','arrow','FaceColor','m',...
+h(1)=line(ax,'XData',x,'YData',y,'Tag','arrow','Color','m','LineWidth',2);
+h(2)=patch(ax,'XData',x_a,'YData',y_a,'Tag','arrow','FaceColor','m',...
   'EdgeColor','m');
+setappdata(h(1),'group',h);
+setappdata(h(2),'group',h);
+% set(h(1),'ButtonDownFcn',{@CallbackSet.ArrowCallback,'delete'});
